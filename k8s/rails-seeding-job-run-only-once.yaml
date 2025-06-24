@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rails-rayces-seeds
+  namespace: raycesv3
+  labels:
+    app.kubernetes.io/name: rails-rayces-seeds
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rails-rayces-seeds
+    spec:
+      containers:
+      - name: rails-api
+        image: rayces-backend
+        command: [ "bash", "-c" ]
+        args:
+          - |
+            # Optionally, remove any PID file if needed
+            rm -f tmp/pids/server.pid && \
+            # Run the seed task
+            bundle exec rails db:seed
+        envFrom:
+        - configMapRef:
+            name: raycesv3-config
+      restartPolicy: Never
+

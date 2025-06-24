@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs-rayces
+  namespace: raycesv3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextjs-rayces
+  template:
+    metadata:
+      labels:
+        app: nextjs-rayces
+    spec:
+      containers:
+      - name: nextjs
+        image: rayces-frontend
+        command: ["yarn", "dev"]
+        env:
+          - name: NODE_ENV
+            value: "development"
+          - name: PORT
+            value: "8080"
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - secretRef:
+              name: raycesv3-environment

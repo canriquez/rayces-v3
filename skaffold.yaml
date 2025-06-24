@@ -1,0 +1,37 @@
+# skaffold.yaml
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: myhub-local-rancher
+build:
+  # Local build configuration
+  local:
+    useBuildkit: true
+    push: false
+    # Concurrency can be adjusted based on your dev container resources
+    concurrency: 1
+    # tryImportMissing: true # Can be useful if you want Skaffold to try and use locally present images
+  artifacts:
+    # Image names can be simple now, no registry prefix needed.
+    - image: rayces-backend
+      context: rails-api
+      docker:
+        dockerfile: Dockerfile
+      # Specify the platform if your dev container (and thus k3d nodes) are ARM64
+    - image: rayces-frontend
+      context: nextjs
+      docker:
+        dockerfile: Dockerfile
+        target: dev
+manifests:
+  # Use kustomize to manage Kubernetes manifests
+  kustomize:
+    # This is the path to your kustomization.yaml file 
+    paths:
+      - ./k8s/
+deploy:
+  kubectl:
+    # Skaffold will use the current kubectl context (which postCreateCommand sets to k3d-mydevcluster)
+    defaultNamespace: raycesv3 # Ensure this namespace exists in your k3d cluster or create it
+    # This is the primary fix for the race condition.
+  statusCheck: true
