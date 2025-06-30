@@ -1,0 +1,348 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description:
+globs:
+alwaysApply: true
+---
+# Page UI Project Structure
+
+This rule outlines the directory structure and organization of the rayces-v3 project
+
+
+## Full Stack Root Directory Structure
+
+```
+rayces-v3/
+├── k8s/          # Kubernetes / skaffold manifests 
+├── nextjs/            # full UI using Next.js app
+├── rails-api/          # 📄 Complete backend solution used on API mode only. (no ui views)
+└── skaffold.yaml        # Skaffold application yaml for k8s cluster assisted development
+```
+
+## Components Directory (`/nextjs`)
+
+**Purpose**: Host complete UI application.
+
+# NextJS Project Structure
+
+```
+nextjs/
+├── package.json                 # Project dependencies and scripts
+├── yarn.lock                    # Locked dependency versions
+├── tailwind.config.ts           # Tailwind CSS configuration
+├── tsconfig.json                # TypeScript configuration
+├── postcss.config.mjs           # PostCSS configuration
+├── next.config.mjs              # Next.js configuration
+├── Dockerfile                   # Docker container configuration
+├── docker-compose.yml           # Docker Compose services
+├── README.md                    # Project documentation
+├── .dockerignore                # Docker ignore patterns
+├── .gitignore                   # Git ignore patterns
+├── .tool-versions               # Tool version specifications
+├── next-env.d.ts                # Next.js TypeScript declarations
+├── tsconfig.tsbuildinfo         # TypeScript build info cache
+├── .next/                       # Next.js build output (generated)
+├── node_modules/                # Dependencies (generated)
+├── types/
+│   └── next-auth.d.ts          # NextAuth.js type declarations
+├── public/
+│   ├── assets/
+│   │   ├── loader.gif          # Loading animation
+│   │   ├── MyHub_icon.png      # MyHub application icon
+│   │   └── please_login.png    # Login prompt image
+│   ├── next.svg                # Next.js logo
+│   └── vercel.svg              # Vercel logo
+└── src/
+    └── app/                     # Next.js 13+ App Router
+        ├── globals.css          # Global styles
+        ├── layout.tsx           # Root layout component
+        ├── page.tsx             # Home page component
+        ├── favicon.ico          # Site favicon
+        ├── components/          # Reusable UI components
+        │   ├── Feed.tsx         # Feed component for posts
+        │   ├── IconActions.tsx  # Icon action buttons
+        │   ├── Input.tsx        # Input form component
+        │   ├── News.tsx         # News/announcements component
+        │   ├── Post.tsx         # Individual post component
+        │   ├── ServerLive.tsx   # Server status indicator
+        │   ├── SessionWrapper.tsx # Session management wrapper
+        │   └── Sidebar.tsx      # Sidebar navigation
+        ├── posts/               # Posts-related pages
+        │   └── [id]/            # Dynamic post ID route
+        │       └── page.tsx     # Individual post page
+        └── api/                 # API routes
+            ├── auth/            # Authentication API
+            │   └── [...nextauth]/ # NextAuth.js catch-all route
+            │       └── route.js # NextAuth.js configuration
+            └── rails-app/       # Rails API integration
+                └── api.ts       # Rails API client utilities
+```
+
+## Key Features
+
+- **Next.js 13+ App Router**: Uses the modern App Router for file-based routing
+- **TypeScript**: Full TypeScript support with proper type definitions
+- **Tailwind CSS**: Utility-first CSS framework for styling
+- **NextAuth.js**: Authentication system integration
+- **Docker Support**: Containerized deployment with Docker and Docker Compose
+- **Rails API Integration**: Backend API communication utilities
+- **Component Architecture**: Modular, reusable React components
+- **Dynamic Routing**: Support for dynamic post pages with `[id]` parameter
+
+## Component Structure
+
+The application follows a modular component architecture with:
+- **Layout Components**: `layout.tsx` for overall page structure
+- **Page Components**: `page.tsx` files for specific routes
+- **UI Components**: Reusable components in `/components/` directory
+- **API Routes**: Backend communication in `/api/` directory
+
+## Asset Management
+
+Static assets are organized in `/public/assets/` with:
+- Application branding (logos, icons)
+- UI elements (loader animations)
+- User interface graphics
+
+
+## Kubernetes (K8s) Project Structure Directory (`/k8s/`)
+
+**Purpose**: Full k8s manifests.
+
+```
+k8s/
+├── namespace.yaml                    # Kubernetes namespace definition
+├── kustomization.yaml                # Kustomize configuration for resource management
+├── dot.env-example                   # Environment variables template
+├── storage.yaml                      # Persistent volume storage configuration
+├── backend-deployment.yaml           # Rails API backend deployment
+├── backend-service.yaml              # Rails API backend service
+├── frontend-deployment.yaml          # NextJS frontend deployment
+├── frontend-service.yaml             # NextJS frontend service
+├── postgres-deployment.yaml          # PostgreSQL database deployment
+├── postgres-service.yaml             # PostgreSQL database service
+└── rails-seeding-job-run-only-once.yaml # Database seeding job (one-time execution)
+```
+
+## Infrastructure Components
+
+### **Core Services**
+- **Backend (Rails API)**: RESTful API service for business logic
+- **Frontend (NextJS)**: React-based web application
+- **Database (PostgreSQL)**: Relational database for data persistence
+
+### **Kubernetes Resources**
+
+#### **Deployments**
+- `backend-deployment.yaml`: Rails API application deployment
+- `frontend-deployment.yaml`: NextJS frontend application deployment
+- `postgres-deployment.yaml`: PostgreSQL database deployment
+
+#### **Services**
+- `backend-service.yaml`: Exposes Rails API internally
+- `frontend-service.yaml`: Exposes NextJS frontend internally
+- `postgres-service.yaml`: Exposes PostgreSQL database internally
+
+#### **Storage & Configuration**
+- `storage.yaml`: Persistent volume claims for data storage
+- `namespace.yaml`: Isolated namespace for the application
+- `dot.env-example`: Environment variables template for configuration
+
+#### **Jobs**
+- `rails-seeding-job-run-only-once.yaml`: Database seeding job for initial data
+
+#### **Management**
+- `kustomization.yaml`: Kustomize configuration for resource orchestration
+
+## Architecture Overview
+
+The Kubernetes setup follows a microservices architecture with:
+
+1. **Frontend Layer**: NextJS application serving the user interface
+2. **Backend Layer**: Rails API handling business logic and data processing
+3. **Data Layer**: PostgreSQL database for persistent data storage
+4. **Infrastructure Layer**: Kubernetes resources for orchestration and scaling
+
+## Deployment Strategy
+
+- **Stateless Applications**: Frontend and backend are deployed as stateless services
+- **Stateful Database**: PostgreSQL uses persistent storage for data durability
+- **One-time Jobs**: Database seeding runs once during initial setup
+- **Service Discovery**: Internal services communicate via Kubernetes service names
+- **Resource Management**: Kustomize manages resource configurations and overlays
+
+## Key Features
+
+- **Namespace Isolation**: All resources run in a dedicated namespace
+- **Persistent Storage**: Database data persists across pod restarts
+- **Service Mesh**: Internal service communication via Kubernetes services
+- **Configuration Management**: Environment-based configuration via ConfigMaps/Secrets
+- **Resource Orchestration**: Kustomize for managing multiple environments
+
+## Rails-api Directory  (`/rails-api/`)
+
+**Purpose**: full backend solution
+
+# Rails API Project Structure
+
+```
+rails-api/
+├── Dockerfile                        # Docker container configuration
+├── docker-compose.yml                # Docker Compose services
+├── entrypoint.sh                     # Docker container entrypoint script
+├── Gemfile                           # Ruby dependencies specification
+├── Gemfile.lock                      # Locked gem versions
+├── Rakefile                          # Rake task definitions
+├── config.ru                         # Rack configuration
+├── .dockerignore                     # Docker ignore patterns
+├── .gitattributes                    # Git attributes configuration
+├── .gitignore                        # Git ignore patterns
+├── .rspec                            # RSpec configuration
+├── .ruby-version                     # Ruby version specification
+├── bin/                              # Executable scripts
+│   ├── docker-entrypoint             # Docker container startup script
+│   ├── rails                         # Rails command line tool
+│   ├── rake                          # Rake task runner
+│   └── setup                         # Application setup script
+├── config/                           # Application configuration
+│   ├── application.rb                # Main application configuration
+│   ├── boot.rb                       # Application bootstrapping
+│   ├── environment.rb                # Environment-specific configuration
+│   ├── database.yml                  # Database configuration
+│   ├── credentials.yml.enc           # Encrypted credentials
+│   ├── storage.yml                   # Active Storage configuration
+│   ├── cable.yml                     # Action Cable configuration
+│   ├── puma.rb                       # Puma web server configuration
+│   ├── routes.rb                     # Application routes
+│   ├── initializers/                 # Application initializers
+│   │   ├── cors.rb                   # CORS configuration
+│   │   ├── filter_parameter_logging.rb # Parameter filtering
+│   │   └── inflections.rb            # Custom inflections
+│   ├── environments/                 # Environment-specific configs
+│   │   ├── development.rb            # Development environment
+│   │   ├── production.rb             # Production environment
+│   │   └── test.rb                   # Test environment
+│   └── locales/                      # Internationalization files
+├── db/                               # Database files
+│   ├── migrate/                      # Database migrations
+│   │   ├── 20240602194839_create_users.rb
+│   │   ├── 20240603154549_create_posts.rb
+│   │   └── 20240606034427_create_likes.rb
+│   ├── schema.rb                     # Database schema
+│   ├── seeds.rb                      # Database seeding
+│   └── post_seeds.csv                # CSV data for seeding
+├── app/                              # Application code
+│   ├── controllers/                  # Controller classes
+│   │   ├── application_controller.rb # Base controller
+│   │   ├── welcome_controller.rb     # Welcome page controller
+│   │   ├── users_controller.rb       # User management
+│   │   ├── posts_controller.rb       # Post management
+│   │   ├── likes_controller.rb       # Like management
+│   │   ├── concerns/                 # Controller concerns
+│   │   └── api/                      # API controllers
+│   │       └── v1/                   # API version 1
+│   │           └── test_controller.rb # API test endpoint
+│   ├── models/                       # Model classes
+│   │   ├── application_record.rb     # Base model
+│   │   ├── user.rb                   # User model
+│   │   ├── post.rb                   # Post model
+│   │   ├── like.rb                   # Like model
+│   │   └── concerns/                 # Model concerns
+│   ├── middleware/                   # Custom middleware
+│   │   └── google_token_verifier.rb  # Google token verification
+│   ├── jobs/                         # Background jobs
+│   │   └── application_job.rb        # Base job class
+│   ├── mailers/                      # Mailer classes
+│   │   └── application_mailer.rb     # Base mailer
+│   ├── views/                        # View templates
+│   │   └── layouts/                  # Layout templates
+│   │       ├── mailer.html.erb       # HTML mailer layout
+│   │       └── mailer.text.erb       # Text mailer layout
+│   └── channels/                     # Action Cable channels
+│       └── application_cable/        # Base cable classes
+│           ├── channel.rb            # Base channel
+│           └── connection.rb         # Base connection
+├── lib/                              # Library code
+│   └── tasks/                        # Custom Rake tasks
+│       └── .keep                     # Placeholder file
+├── spec/                             # RSpec test files
+│   ├── spec_helper.rb                # RSpec configuration
+│   ├── rails_helper.rb               # Rails-specific RSpec config
+│   ├── requests/                     # Request specs
+│   │   ├── posts_spec.rb             # Posts API tests
+│   │   └── users_spec.rb             # Users API tests
+│   ├── controllers/                  # Controller specs
+│   │   └── users_controller_spec.rb  # Users controller tests
+│   ├── models/                       # Model specs
+│   │   └── post_spec.rb              # Post model tests
+│   ├── middleware/                   # Middleware specs
+│   │   └── google_token_verifier_spec.rb # Token verifier tests
+│   └── factories/                    # Factory definitions
+│       └── posts.rb                  # Post factories
+├── test/                             # Test files (alternative to RSpec)
+│   ├── test_helper.rb                # Test configuration
+│   ├── controllers/                  # Controller tests
+│   ├── models/                       # Model tests
+│   ├── integration/                  # Integration tests
+│   ├── fixtures/                     # Test fixtures
+│   └── channels/                     # Channel tests
+├── public/                           # Public assets
+│   └── robots.txt                    # Robots exclusion file
+├── storage/                          # Active Storage files
+├── tmp/                              # Temporary files
+├── log/                              # Application logs
+└── vendor/                           # Vendor dependencies
+```
+
+## Application Architecture
+
+### **Core Components**
+- **API-First Design**: RESTful API endpoints for frontend consumption
+- **Authentication**: Google token verification middleware
+- **Database**: PostgreSQL with Active Record ORM
+- **Testing**: RSpec for comprehensive test coverage
+
+### **Key Models**
+- **User**: User management and authentication
+- **Post**: Content management system
+- **Like**: Social interaction functionality
+
+### **API Structure**
+- **Versioned API**: `/api/v1/` namespace for API versioning
+- **RESTful Controllers**: Standard CRUD operations
+- **CORS Support**: Cross-origin resource sharing enabled
+
+## Development Features
+
+### **Testing Strategy**
+- **Request Specs**: API endpoint testing
+- **Controller Specs**: Controller behavior testing
+- **Model Specs**: Model validation and business logic
+- **Middleware Specs**: Custom middleware testing
+- **Factories**: Test data generation
+
+### **Configuration Management**
+- **Environment-Specific**: Separate configs for dev/test/prod
+- **Encrypted Credentials**: Secure credential management
+- **Database Migrations**: Version-controlled schema changes
+- **CORS Configuration**: Cross-origin request handling
+
+### **Docker Support**
+- **Containerized**: Full Docker support with docker-compose
+- **Entrypoint Scripts**: Automated container startup
+- **Multi-stage Builds**: Optimized container images
+
+## Key Features
+
+- **RESTful API**: Clean, RESTful API design
+- **Authentication**: Google OAuth integration
+- **Database Seeding**: Automated data population
+- **Background Jobs**: Asynchronous task processing
+- **Real-time Features**: Action Cable for WebSocket support
+- **Comprehensive Testing**: Full test coverage with RSpec
+- **Production Ready**: Optimized for production deployment
+

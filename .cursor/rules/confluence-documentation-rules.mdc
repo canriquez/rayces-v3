@@ -1,0 +1,338 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Confluence Documentation Maintenance Rules
+
+## Overview
+This rule ensures that all Confluence documentation remains current and stakeholders are kept informed of project progress, changes, and critical updates in real-time.
+
+## Automatic Documentation Update Triggers
+
+### 📋 When to Update Confluence Documentation
+
+#### **Immediate Updates Required**
+- Any change to milestone dates or critical deadlines
+- Sprint completion or sprint planning changes
+- Epic or story status changes in Jira
+- Risk assessment updates or new risks identified
+- Architecture or technical specification changes
+- Team composition or role assignment changes
+- Budget or resource allocation modifications
+
+#### **Daily Updates Required**
+- Progress against critical milestones (July 18 MVP demo, August 31 full implementation)
+- Sprint burndown and velocity tracking
+- Blocker identification and resolution status
+- Story completion and acceptance
+
+#### **Weekly Updates Required**
+- Sprint retrospective outcomes
+- Velocity and capacity planning adjustments
+- Stakeholder feedback incorporation
+- Timeline adjustments or scope changes
+
+## 📊 Confluence Pages to Maintain
+
+### **1. Home Page** (`/wiki/spaces/SCRUM/pages/65964`)
+**Update Triggers:**
+- Project status changes
+- Critical milestone countdown updates
+- New documentation pages created
+- Team or contact information changes
+- Architecture stack updates
+
+**Required Sections:**
+- Critical milestone alerts (days remaining)
+- Current sprint status
+- Epic progress overview
+- Risk dashboard summary
+- Quick navigation links
+
+**Update Frequency:** Daily during critical sprints, weekly otherwise
+
+### **2. Milestone Timeline & Critical Dates** (`/wiki/spaces/SCRUM/pages/66119`)
+**Update Triggers:**
+- Any milestone date changes
+- Sprint schedule adjustments
+- Risk probability or impact changes
+- Contingency plan activation
+- Success criteria modifications
+
+**Required Sections:**
+- Real-time countdown timers
+- Sprint-by-sprint breakdown
+- Risk assessment matrix
+- Success criteria checklists
+- Contingency plans status
+
+**Update Frequency:** Daily during Sprint 1-3, every 2 days afterward
+
+### **3. Project Plan** (`/wiki/spaces/SCRUM/pages/262145`)
+**Update Triggers:**
+- Scope changes or feature additions/removals
+- Timeline adjustments
+- Success criteria modifications
+- Budget or resource changes
+- Stakeholder changes
+
+**Required Sections:**
+- Updated timeline with milestone dates
+- Success criteria tracking
+- Risk mitigation status
+- Sprint schedule with deliverables
+- Reference materials updates
+
+**Update Frequency:** Weekly or when major changes occur
+
+### **4. Epic & Story Tracking** (`/wiki/spaces/SCRUM/pages/66001`)
+**Update Triggers:**
+- Story status changes (To Do → In Progress → Done)
+- Epic completion percentage updates
+- Sprint assignments or reassignments
+- Story point adjustments
+- Acceptance criteria modifications
+
+**Required Sections:**
+- Real-time epic progress tracking
+- Sprint commitment and completion status
+- Story breakdown with current status
+- Definition of Done compliance
+- Burndown charts and velocity metrics
+
+**Update Frequency:** Daily during active sprints
+
+### **5. Technical Architecture** (`/wiki/spaces/SCRUM/pages/393219`)
+**Update Triggers:**
+- Technology stack changes
+- Database schema modifications
+- API endpoint additions or changes
+- Security architecture updates
+- Infrastructure changes
+
+**Required Sections:**
+- Current technology stack
+- System architecture diagrams
+- Database schema evolution
+- API documentation links
+- Deployment architecture
+
+**Update Frequency:** When technical changes occur
+
+### **6. Development Guide** (`/wiki/spaces/SCRUM/pages/425985`)
+**Update Triggers:**
+- Setup instruction changes
+- New development tools or workflows
+- Testing procedure updates
+- CI/CD pipeline modifications
+- Docker or Kubernetes config changes
+
+**Required Sections:**
+- Current setup instructions
+- Development workflow procedures
+- Testing guidelines
+- Deployment procedures
+- Troubleshooting guides
+
+**Update Frequency:** When development procedures change
+
+### **7. Security & Compliance** (`/wiki/spaces/SCRUM/pages/262176`)
+**Update Triggers:**
+- Security architecture changes
+- Compliance requirement updates
+- Incident reports or security reviews
+- Authentication/authorization changes
+- Data protection procedure updates
+
+**Required Sections:**
+- Security architecture overview
+- Compliance framework status
+- Incident response procedures
+- Authentication mechanisms
+- Data protection measures
+
+**Update Frequency:** When security-related changes occur
+
+## 🔄 Documentation Update Process
+
+### **Step 1: Change Detection**
+Monitor for:
+- CHANGELOG.md modifications
+- Jira issue status changes
+- Repository commits affecting documentation
+- Sprint ceremony outcomes
+- Stakeholder feedback or requests
+
+### **Step 2: Impact Assessment**
+Determine which Confluence pages require updates based on:
+- Type of change (milestone, technical, process)
+- Stakeholder impact level (critical, high, medium, low)
+- Timeline sensitivity (immediate, daily, weekly)
+
+### **Step 3: Content Update**
+For each affected page:
+- Update relevant sections with current information
+- Maintain consistent formatting and structure
+- Include date stamps and change attribution
+- Update cross-references and internal links
+
+### **Step 4: Stakeholder Notification**
+- Update "Last Updated" timestamps
+- Add change summaries to page comments
+- Notify relevant stakeholders via Confluence notifications
+- Update home page with summary of changes
+
+## 📝 Documentation Standards
+
+### **Content Requirements**
+- **Accuracy**: All information must be current and verified
+- **Clarity**: Use clear, stakeholder-appropriate language
+- **Completeness**: Include all necessary context and details
+- **Consistency**: Maintain consistent formatting and terminology
+- **Traceability**: Link to source information (Jira, GitHub, etc.)
+
+### **Formatting Standards**
+- Use consistent heading hierarchy (H1, H2, H3)
+- Include tables for structured data comparison
+- Use emojis and visual indicators for status (🔥, ⚠️, ✅, ⏳)
+- Maintain consistent date formats (YYYY-MM-DD)
+- Include navigation breadcrumbs and quick links
+
+### **Version Control**
+- Document all changes in page comments
+- Include rationale for major modifications
+- Maintain change attribution ([Author Name])
+- Archive outdated information appropriately
+
+## 🚨 Critical Update Scenarios
+
+### **Red Alert - Immediate Updates Required**
+- **Milestone Date Changes**: Update all affected pages within 1 hour
+- **Critical Blocker Identification**: Update risk pages immediately
+- **Scope Changes**: Update project plan and epic tracking within 2 hours
+- **Security Incidents**: Update security page immediately
+
+### **Yellow Alert - Same-Day Updates Required**
+- **Sprint Status Changes**: Update epic tracking by end of day
+- **Story Completion**: Update progress tracking within 4 hours
+- **Team Changes**: Update contact information by end of day
+
+### **Green Alert - Weekly Updates**
+- **Routine Progress**: Update during weekly planning sessions
+- **Documentation Improvements**: Update during scheduled reviews
+- **Reference Material Updates**: Update during maintenance windows
+
+## 📊 Stakeholder Communication Matrix
+
+### **Executive Stakeholders**
+**Pages of Interest:**
+- Home Page (status overview)
+- Milestone Timeline (critical dates)
+- Project Plan (high-level progress)
+
+**Update Frequency:** Weekly summaries, immediate for critical changes
+**Communication Style:** Executive summary format, focus on outcomes
+
+### **Technical Stakeholders**
+**Pages of Interest:**
+- Technical Architecture
+- Development Guide
+- Epic & Story Tracking
+
+**Update Frequency:** Real-time for technical changes
+**Communication Style:** Detailed technical information
+
+### **Project Management**
+**Pages of Interest:**
+- Epic & Story Tracking
+- Milestone Timeline
+- Risk Management sections
+
+**Update Frequency:** Daily during active sprints
+**Communication Style:** Detailed progress and risk information
+
+### **Quality Assurance**
+**Pages of Interest:**
+- Development Guide (testing procedures)
+- Security & Compliance
+- Definition of Done tracking
+
+**Update Frequency:** When testing procedures change
+**Communication Style:** Process-focused with clear criteria
+
+## 🔍 Monitoring and Compliance
+
+### **Documentation Health Checks**
+- **Daily**: Verify critical milestone countdowns are accurate
+- **Weekly**: Review all pages for outdated information
+- **Sprint Boundaries**: Comprehensive review of all documentation
+- **Monthly**: Archive outdated content and update references
+
+### **Quality Metrics**
+- **Freshness**: No page should be >7 days old during critical phases
+- **Completeness**: All required sections must have current content
+- **Accuracy**: Cross-reference with source systems (Jira, GitHub)
+- **Accessibility**: All stakeholders can find relevant information quickly
+
+### **Compliance Verification**
+- All changes documented with attribution and rationale
+- Critical updates completed within specified timeframes
+- Stakeholder notification requirements met
+- Version history maintained appropriately
+
+## 🛠️ Implementation Guidelines
+
+### **Before Making Changes**
+1. Identify all affected Confluence pages
+2. Determine update priority (red/yellow/green alert)
+3. Gather all relevant source information
+4. Plan update sequence for dependent pages
+
+### **During Updates**
+1. Update pages in logical dependency order
+2. Maintain consistent cross-references
+3. Update navigation and quick links
+4. Verify all data accuracy against sources
+
+### **After Updates**
+1. Review all updated pages for consistency
+2. Test internal links and navigation
+3. Notify relevant stakeholders of changes
+4. Update home page with change summary
+
+### **Tools and Automation**
+- Use Confluence templates for consistent formatting
+- Leverage Jira integrations for real-time status updates
+- Implement automated notification workflows where possible
+- Maintain bookmark collections for quick access
+
+## 📋 Checklist for Documentation Updates
+
+### **Pre-Update Checklist**
+- [ ] Identified all pages requiring updates
+- [ ] Determined update priority level
+- [ ] Gathered current information from source systems
+- [ ] Planned update sequence and dependencies
+
+### **Update Checklist**
+- [ ] Updated all affected content sections
+- [ ] Verified accuracy against source systems
+- [ ] Updated timestamps and attribution
+- [ ] Checked internal links and references
+- [ ] Updated navigation and quick access sections
+
+### **Post-Update Checklist**
+- [ ] Reviewed all pages for consistency
+- [ ] Tested navigation and links
+- [ ] Updated home page summary
+- [ ] Notified relevant stakeholders
+- [ ] Documented changes in page comments
+
+---
+
+**Remember**: Keeping stakeholders informed with current, accurate information is critical for project success. When in doubt, err on the side of over-communication rather than under-communication.
+
+**Last Updated**: June 30, 2025  
+**Next Review**: Weekly during critical phases, monthly otherwise
+

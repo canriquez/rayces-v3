@@ -1,0 +1,254 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Rails 7 API Application Development Standards for Mi Rayces
+globs: 
+  - "**/*.rb"
+  - "**/config/**/*"
+  - "**/db/**/*"
+  - "**/app/**/*"
+  - "**/lib/**/*"
+  - "**/spec/**/*"
+alwaysApply: true
+---
+
+# Rails 7 API Development Standards – Mi Rayces
+
+## Project Structure & Conventions
+
+- Use Rails 7 in API-only mode; exclude view and asset-related directories.
+- Organize models, controllers, serializers, policies, and jobs in feature-oriented subfolders when complexity grows.
+- Maintain a `/services` directory for business logic not belonging in models or controllers.
+- Place policy classes in `/app/policies`, one per resource for Pundit.
+- Use `/app/serializers` for ActiveModel::Serializers.
+
+## API Design
+
+- Namespace all API endpoints under `/api/v1/` for versioning.
+- Use JSON as the default format.
+- Prefer RESTful resource design: `index`, `show`, `create`, `update`, `destroy`.
+- Add custom member/collection actions only when business logic requires (e.g., `confirm`, `cancel` for appointments).
+- Enforce strong parameters; never permit mass assignment outside permitted params.
+- Return descriptive HTTP status codes and standardized JSON error formats.
+
+## Authentication & Authorization
+
+- Use Devise for authentication and devise-jwt for stateless JWT tokens.
+- Configure JWT denylist for logout/invalidation.
+- Require authentication for all endpoints except public ones (e.g., viewing professionals).
+- Use Pundit for RBAC. Write a policy class for every model with access logic per role, strictly matching the RBAC matrix.
+- Ensure every controller action is covered by an explicit Pundit authorization call.
+
+## Roles & User Management
+
+- Implement roles as a separate model (Role), referenced by User.
+- On user creation, assign roles explicitly (default: 'client' via registration).
+- Scope data access by role (e.g., clients can only see their data, secretaries have broader access).
+
+## Appointment Lifecycle & State Machines
+
+- Use the AASM gem for modeling Appointment state transitions. States: `draft`, `pre_confirmed`, `confirmed`, `executed`, `cancelled`.
+- Implement all business transitions as events. Use after_transition hooks for side effects (email notifications, credit ledger entries, audit logs).
+- Side effects should be dispatched to Sidekiq workers, never run synchronously in the request cycle.
+
+## Background Jobs & Notifications
+
+- Use Sidekiq for background processing. All emails, expirations, and long-running tasks must be async.
+- All workers must be idempotent; check current state before mutating records.
+- Implement NotificationWorker for transactional emails and AppointmentExpirationWorker for expiring pre-confirmed bookings.
+- Store email templates in mailers; do not inline email text in jobs.
+
+## Real-Time & ActionCable
+
+- Use ActionCable for real-time updates (e.g., calendar availability).
+- Implement an `AvailabilityChannel` streaming updates to relevant users (e.g., stream_for professional).
+- Broadcast only sanitized, minimal payloads—never expose sensitive info.
+
+## Models & Associations
+
+- Prefer explicit, documented associations.
+- Use strong typing: always use `references` for associations in migrations.
+- Define all validation and constraints at both DB (migration: null, foreign_key) and model level.
+- Use enums or string columns for simple status fields; prefer AASM for complex workflows.
+- Store monetary values as `decimal`, never `float`.
+
+## Data Integrity & Auditing
+
+- Use a dedicated `AuditLog` model for tracking key actions (who, what, when).
+- All appointment transitions that affect state or credits must be logged.
+- Enforce referential integrity and uniqueness constraints at the DB level.
+
+## Testing
+
+- Use RSpec as the test framework.
+- Write model, request, and policy specs for all new features.
+- Use FactoryBot for factories and traits for different roles and states.
+- Test state transitions, background jobs, and Pundit policies.
+- Include negative, edge, and authorization tests for all endpoints.
+- Mock Sidekiq in specs, assert job enqueuing and side effects.
+
+## API Security & CORS
+
+- Use rack-cors to whitelist only trusted frontend origins.
+- Enforce HTTPS in production environments.
+- Do not expose stack traces or detailed errors in production responses.
+
+## Error Handling
+
+- Use `rescue_from` in controllers to catch and standardize errors (ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError, etc).
+- Always return errors in a consistent JSON format.
+
+## Database & Migrations
+
+- All migrations must be reversible and idempotent.
+- Use database-level constraints for NOT NULL, uniqueness, and foreign keys.
+- Keep schema.rb or structure.sql committed and up-to-date.
+- Prefer explicit indexes on columns used in lookups and foreign keys.
+
+## Deployment
+
+- Never commit secrets; use Rails credentials or ENV variables.
+- Prepare for Heroku, Fly.io, or Dockerized deployment (stateless servers, ENV-based config).
+- Ensure Sidekiq is launched as a separate process in production.
+- Health-check endpoints should not require authentication.
+
+## Documentation
+
+- Keep API docs in sync (preferably in an OpenAPI/Swagger format or via automated tools).
+- Maintain a changelog (CHANGELOG.md) and update with each release or migration.
+
+## Code Quality
+
+- Run RuboCop and Rails Best Practices on every commit.
+- Enforce PR code review for all merges to main branches.
+- Prefer short, readable methods and classes.
+- Document all non-trivial business logic inline with comments.
+
+## Internationalization & Localization
+
+- All user-facing strings must be in locale files (I18n).
+- Never hard-code user-facing messages in models/controllers.
+
+## Accessibility & Auditing
+
+- Ensure accessibility is considered in all public-facing error messages and API responses (clear, actionable messages).
+- Maintain auditability in appointment and credit-related flows.
+
+---
+
+## Example Model Boilerplate
+
+```ruby
+class Appointment < ApplicationRecord
+  include AASM
+
+  belongs_to :client_profile
+  belongs_to :professional_profile
+
+  validates :start_time, :end_time, presence: true
+
+  aasm column: 'status' do
+    state :draft, initial: true
+    state :pre_confirmed
+    state :confirmed
+    state :executed
+    state :cancelled
+
+    event :pre_confirm do
+      transitions from: :draft, to: :pre_confirmed, after: :queue_pre_confirmation_tasks
+    end
+
+    event :confirm do
+      transitions from: :pre_confirmed, to: :confirmed, after: :queue_confirmation_tasks
+    end
+
+  end
+
+  private
+
+  def queue_pre_confirmation_tasks
+    NotificationWorker.perform_async(id, :pre_confirmation)
+    AppointmentExpirationWorker.perform_in(24.hours, id)
+  end
+
+  def queue_confirmation_tasks
+    NotificationWorker.perform_async(id, :confirmation)
+    AuditLog.create!(user: ..., action: 'confirmed', auditable: self)
+    # Cancel expiration worker if needed
+  end
+end
+```
+
+---
+
+## Example Controller Action
+
+```ruby
+class Api::V1::AppointmentsController < ApplicationController
+  before_action :authenticate_user!
+  after_action :verify_authorized
+
+  def create
+    @appointment = current_user.client_profile.appointments.build(appointment_params)
+    authorize @appointment
+    if @appointment.save
+      @appointment.pre_confirm!
+      render json: @appointment, status: :created
+    else
+      render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def appointment_params
+    params.require(:appointment).permit(:professional_profile_id, :start_time, :end_time, :price)
+  end
+end
+```
+
+---
+
+## Example Pundit Policy
+
+```ruby
+class AppointmentPolicy < ApplicationPolicy
+  def create?
+    user.role.name == 'client' || user.role.name == 'secretary'
+  end
+
+  def confirm?
+    user.role.name == 'secretary'
+  end
+
+  def show?
+    user.client_profile&.id == record.client_profile_id ||
+      user.professional_profile&.id == record.professional_profile_id ||
+      user.role.name == 'secretary'
+  end
+end
+```
+
+---
+
+## Example Sidekiq Worker
+
+```ruby
+class AppointmentExpirationWorker
+  include Sidekiq::Worker
+
+  def perform(appointment_id)
+    appointment = Appointment.find(appointment_id)
+    return unless appointment.pre_confirmed?
+
+    appointment.expire!
+  end
+end
+```
+
+---
+
+*Adhere strictly to these rules for all Rails code within the Mi Rayces project. All architectural choices must comply with this document and the overarching architecture plan. Deviations must be justified with a PR comment.*

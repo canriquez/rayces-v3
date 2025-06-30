@@ -1,0 +1,99 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Project Development and Changelog Documentation Rules (with Folder Context)
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Project Development and Documentation Standards
+
+## Change Tracking & Changelog Management
+
+- **Maintain a Changelog:**  
+  - A `CHANGELOG.md` file MUST exist at the project root.
+  - Every change accepted into the main codebase (via commit, merge, or “Accept Changes” action in Cursor) MUST be documented in `CHANGELOG.md`.
+  - The changelog must follow the [Keep a Changelog](mdc:https:/keepachangelog.com/en/1.0.0) convention, with sections for `Added`, `Changed`, `Fixed`, and `Removed`.
+  - **For every entry, specify the top-level folder where the change applies (`rails-api/`, `nextjs/`, `k8s/`, etc.).**
+  - If a change affects multiple folders, enumerate each explicitly.
+
+- **Changelog Entry Requirements:**  
+  - Each entry MUST include:
+    - The date (YYYY-MM-DD) and time (if possible, local or UTC).
+    - The author (e.g., `Cursor`, or the actual user/committer if known).
+    - The *top-level folder* affected (e.g., `rails-api/`, `nextjs/`, `k8s/`).
+    - A concise yet specific description of WHAT was changed (e.g., “Added Appointment AASM state machine to model”).
+    - The WHY or context for the change (e.g., “Implements booking lifecycle as per architecture v1.0”).
+    - (Optionally) Reference to ticket, PR, or feature if available.
+  - For multiple changes in one session, group under a single date, but list all changes as bullet points, each with folder context.
+
+- **Incremental Updates:**  
+  - NEVER overwrite or delete previous changelog entries.
+  - Always append new changes to the top under a new version or “Unreleased” section.
+
+- **File Change Awareness:**  
+  - For every accepted change, enumerate:
+    - Which files were added, modified, renamed, or removed, **and their folder paths**.
+    - Which functions, classes, or APIs were created, updated, or deleted.
+    - Any migrations, configuration, or environment changes.
+  - **Always reference the affected folder explicitly.**
+
+- **Session Awareness:**  
+  - Always check and synchronize with the latest `CHANGELOG.md` before proposing or executing new code changes.
+  - If the changelog is missing, create a new one and backfill the most recent changes.
+  - For any manual changes made outside Cursor, ask for confirmation from the user before updating the changelog.
+
+- **Minimize AI Drift and Hallucination:**  
+  - Cursor must always operate as if the changelog is the single source of truth for project history.
+  - Use the changelog to maintain up-to-date awareness of the codebase and avoid redundant or contradictory changes.
+
+## Documentation Best Practices
+
+- **Self-Documenting Code:**  
+  - All significant functions, classes, or modules should have docstrings or comments explaining their purpose.
+  - Any non-obvious implementation decisions should be documented inline.
+
+- **PR and Merge Requirements:**  
+  - No change is considered “done” until it is reflected in the changelog and, if relevant, in the project documentation (`README.md`, API docs, etc).
+  - Large refactors or architectural changes must include a short architecture note (in `/docs` or as a changelog comment).
+
+- **Cursor Actions:**  
+  - Whenever the user accepts a Cursor-proposed code change, automatically update the changelog as described above.
+  - If multiple changes are staged and accepted together, list each change individually with folder context.
+  - If a changelog entry is ambiguous, ask the user for clarification.
+
+## Example Changelog Entry
+
+```markdown
+## [Unreleased]
+
+### Added
+- 2024-06-27 [Cursor] rails-api/: Added `Appointment` model with AASM state machine for booking lifecycle. Implements booking lifecycle as per architecture v1.0.
+- 2024-06-27 [Cursor] rails-api/: Implemented JWT authentication via Devise and devise-jwt. Enables secure stateless auth for API requests.
+- 2024-06-27 [Cursor] nextjs/: Created custom booking wizard component in `/features/booking/`. Adds multi-step UI for appointment flow.
+- 2024-06-27 [Cursor] k8s/: Added Kubernetes deployment manifests for rails-api and nextjs.
+- 2024-06-27 [Cursor] rails-api/, nextjs/: Updated CORS and API client configs for cross-service communication.
+
+### Changed
+- 2024-06-27 [Cursor] rails-api/: Updated `User` model to support role associations.
+
+### Fixed
+- 2024-06-27 [Cursor] rails-api/: Fixed appointment state transition bug in `Appointment` model.
+
+### Removed
+- 2024-06-27 [Cursor] rails-api/: Removed legacy session-based authentication endpoints.
+```
+
+## General Project Rules
+
+- Always keep the changelog, project docs, and architecture docs up to date and consistent.
+- Use clear, consistent English for all documentation and change descriptions.
+- Encourage transparency and traceability for all code changes, especially when using AI-powered tools.
+
+---
+
+**Strictly adhere to these rules. Any changelog entry that does not clearly and explicitly indicate the affected project folder will be considered invalid and must be corrected.**
