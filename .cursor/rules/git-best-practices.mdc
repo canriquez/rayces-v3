@@ -1,0 +1,459 @@
+---
+alwaysApply: true
+description: Git Best Practices and Workflow Standards for Rayces V3
+---
+
+# Git Best Practices - Rayces V3
+
+## Repository Structure Awareness
+This project follows a monorepo structure with distinct modules:
+- `rails-api/` - Rails 7 API backend
+- `nextjs/` - Next.js frontend application  
+- `k8s/` - Kubernetes manifests and infrastructure
+- `docs/` - Project documentation
+
+## Branch Naming Conventions
+
+### Branch Types
+```
+feature/    - New features or enhancements
+bugfix/     - Bug fixes
+hotfix/     - Critical production fixes
+refactor/   - Code refactoring without functional changes
+docs/       - Documentation updates
+config/     - Configuration changes
+security/   - Security-related changes
+```
+
+### Branch Naming Format
+```
+<type>/<jira-ticket>-<short-description>
+```
+
+### Examples
+```
+feature/SCRUM-32-initialize-rails-api
+bugfix/SCRUM-45-fix-authentication-bug
+hotfix/SCRUM-50-fix-production-error
+refactor/SCRUM-38-optimize-db-queries
+docs/SCRUM-42-update-api-documentation
+config/SCRUM-36-setup-cicd-pipeline
+security/SCRUM-44-implement-rate-limiting
+```
+
+## Commit Message Standards
+
+### Format
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types
+- **feat**: New feature
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes (formatting, missing semicolons)
+- **refactor**: Code refactoring
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks, dependency updates
+- **security**: Security improvements
+- **perf**: Performance improvements
+- **ci**: CI/CD pipeline changes
+
+### Scopes (Project-Specific)
+- **rails-api**: Backend API changes
+- **nextjs**: Frontend application changes
+- **k8s**: Kubernetes/infrastructure changes
+- **docs**: Documentation changes
+- **config**: Configuration changes
+- **auth**: Authentication/authorization
+- **db**: Database changes
+- **api**: API endpoint changes
+- **ui**: User interface changes
+- **deps**: Dependency updates
+
+### Examples
+```
+feat(rails-api): implement JWT authentication with Devise
+fix(nextjs): resolve infinite loop in booking form
+docs(k8s): add deployment instructions
+chore(deps): update Rails to 7.0.8
+security(rails-api): implement rate limiting for API endpoints
+perf(nextjs): optimize image loading with Next.js Image component
+ci(k8s): add automated deployment pipeline
+```
+
+### Subject Line Rules
+- Use imperative mood ("add", "fix", "update", not "added", "fixed", "updated")
+- No period at the end
+- Keep under 50 characters
+- Capitalize first letter
+- Reference Jira ticket when applicable
+
+### Body Guidelines
+- Wrap at 72 characters
+- Explain **what** and **why**, not **how**
+- Include Jira ticket reference
+- Mention breaking changes
+- List any database migrations
+
+### Footer
+- Reference issues: `Closes #123` or `Fixes SCRUM-45`
+- Breaking changes: `BREAKING CHANGE: ...`
+- Co-authors: `Co-authored-by: Name <email>`
+
+## Pull Request Workflow
+
+### PR Title Format
+```
+[SCRUM-##] <type>: <description>
+```
+
+### PR Description Template
+```markdown
+## Overview
+Brief description of changes
+
+## Related Jira Ticket
+- [SCRUM-##](https://canriquez.atlassian.net/browse/SCRUM-##)
+
+## Type of Change
+- [ ] New feature
+- [ ] Bug fix
+- [ ] Breaking change
+- [ ] Documentation update
+- [ ] Refactor
+- [ ] Security improvement
+
+## Affected Components
+- [ ] Rails API (`rails-api/`)
+- [ ] Next.js Frontend (`nextjs/`)
+- [ ] Kubernetes (`k8s/`)
+- [ ] Documentation (`docs/`)
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Manual testing completed
+- [ ] Security testing completed
+
+## Database Changes
+- [ ] No database changes
+- [ ] New migrations added
+- [ ] Existing data migration required
+- [ ] Schema changes documented
+
+## Breaking Changes
+- [ ] No breaking changes
+- [ ] Breaking changes documented
+- [ ] Backward compatibility maintained
+- [ ] Migration guide provided
+
+## Deployment Notes
+- [ ] No special deployment requirements
+- [ ] Requires environment variables
+- [ ] Requires manual deployment steps
+- [ ] Requires database migration
+
+## Security Considerations
+- [ ] No security implications
+- [ ] Security review completed
+- [ ] Secrets/credentials properly handled
+- [ ] Input validation implemented
+
+## Changelog Update
+- [ ] [CHANGELOG.md](mdc:CHANGELOG.md) updated with folder context
+- [ ] Changes documented with date and author
+- [ ] Breaking changes highlighted
+```
+
+### PR Review Requirements
+- **All PRs require at least one review** (except hotfixes)
+- **Security-related PRs require security review**
+- **Database changes require additional review**
+- **Breaking changes require team discussion**
+- **CI/CD pipeline must pass**
+- **No merge conflicts**
+
+## Changelog Integration
+
+### Automatic Changelog Updates
+**CRITICAL**: Every merged PR must update [CHANGELOG.md](mdc:CHANGELOG.md) with:
+- Date and time of change
+- Author information
+- **Affected folder(s)** (rails-api/, nextjs/, k8s/, docs/)
+- Description of changes
+- Reference to Jira ticket
+
+### Changelog Entry Format
+```markdown
+### Added
+- YYYY-MM-DD [Author] rails-api/: Description of change (Implements SCRUM-##)
+
+### Changed  
+- YYYY-MM-DD [Author] nextjs/: Description of change (Updates SCRUM-##)
+
+### Fixed
+- YYYY-MM-DD [Author] k8s/: Description of change (Fixes SCRUM-##)
+
+### Removed
+- YYYY-MM-DD [Author] docs/: Description of change (Removes SCRUM-##)
+```
+
+## Security Best Practices
+
+### Never Commit
+- **Secrets, API keys, passwords**
+- **Database credentials**
+- **JWT secrets**
+- **OAuth client secrets**
+- **Environment-specific configuration**
+- **Personal access tokens**
+- **SSL certificates/private keys**
+
+### Security Checklist
+- [ ] No hardcoded secrets in code
+- [ ] Environment variables used for configuration
+- [ ] Sensitive files in .gitignore
+- [ ] Dependencies scanned for vulnerabilities
+- [ ] Input validation implemented
+- [ ] Authentication/authorization checked
+- [ ] CORS properly configured
+- [ ] Rate limiting implemented where needed
+
+### Pre-commit Security Checks
+```bash
+# Check for secrets (add to git hooks)
+git secrets --scan
+# Check for large files
+git lfs track "*.pdf" "*.zip" "*.tar.gz"
+# Lint security issues
+bundle audit check --update  # Rails
+npm audit fix                # Node.js
+```
+
+## File Management
+
+### .gitignore Essentials
+```gitignore
+# Environment files
+.env*
+!.env.example
+
+# Database
+*.sqlite3
+*.db
+
+# Logs
+*.log
+log/
+
+# Dependencies
+node_modules/
+vendor/bundle/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rails specific
+tmp/
+storage/
+config/master.key
+config/credentials.yml.enc
+
+# Docker
+.dockerignore
+```
+
+### Large File Handling
+- Use Git LFS for files > 100MB
+- Avoid committing build artifacts
+- Store large assets in external storage
+- Document asset management strategy
+
+## Workflow Integration
+
+### Daily Workflow
+1. **Start with updated main**: `git pull origin main`
+2. **Create feature branch**: `git checkout -b feature/SCRUM-##-description`
+3. **Make atomic commits**: Focus on single logical changes
+4. **Update changelog**: Add entry with folder context
+5. **Push regularly**: `git push origin feature/SCRUM-##-description`
+6. **Create PR**: Use template and link to Jira
+7. **Address feedback**: Make requested changes
+8. **Merge after approval**: Squash merge preferred
+
+### Emergency Hotfix Process
+1. **Create hotfix branch from main**: `git checkout -b hotfix/SCRUM-##-critical-fix`
+2. **Fix the issue**: Minimal, focused changes
+3. **Test thoroughly**: Ensure fix works
+4. **Update changelog**: Mark as hotfix
+5. **Create PR**: Expedited review process
+6. **Deploy immediately**: After merge
+7. **Backport if needed**: To release branches
+
+## Multi-Environment Strategy
+
+### Branch Strategy
+```
+main           # Production-ready code
+develop        # Integration branch for features
+feature/*      # Individual feature branches
+release/*      # Release preparation branches
+hotfix/*       # Critical production fixes
+```
+
+### Environment Mapping
+- **main** → Production deployment
+- **develop** → Staging/development environment
+- **feature/** → Feature preview environments
+- **release/** → Pre-production testing
+
+## Continuous Integration
+
+### Required Checks
+- [ ] **Tests pass**: Unit, integration, and E2E tests
+- [ ] **Security scan**: Dependency vulnerabilities
+- [ ] **Code quality**: Linting and formatting
+- [ ] **Build success**: All components build correctly
+- [ ] **Changelog updated**: Required for all changes
+- [ ] **Documentation updated**: If applicable
+
+### Pipeline Configuration
+```yaml
+# Example CI checks
+on:
+  pull_request:
+    branches: [main, develop]
+    
+jobs:
+  test:
+    - name: Run Rails tests
+      run: cd rails-api && bundle exec rspec
+    - name: Run Next.js tests  
+      run: cd nextjs && npm test
+    - name: Security scan
+      run: bundle audit && npm audit
+    - name: Check changelog
+      run: git diff --name-only | grep -q CHANGELOG.md
+```
+
+## Common Anti-Patterns to Avoid
+
+### ❌ Don't Do This
+```bash
+# Generic commit messages
+git commit -m "fix"
+git commit -m "update"
+git commit -m "wip"
+
+# Committing secrets
+git add .env
+git commit -m "add config"
+
+# Working directly on main
+git checkout main
+# make changes
+git commit -m "quick fix"
+
+# Ignoring changelog
+# Making changes without updating CHANGELOG.md
+```
+
+### ✅ Do This Instead
+```bash
+# Descriptive commit messages
+git commit -m "feat(rails-api): implement JWT authentication with Devise"
+git commit -m "fix(nextjs): resolve booking form validation error"
+git commit -m "docs(k8s): add deployment configuration guide"
+
+# Secure configuration
+git add .env.example
+git commit -m "chore(config): add environment variables template"
+
+# Proper branch workflow
+git checkout -b feature/SCRUM-32-jwt-auth
+# make changes
+git commit -m "feat(rails-api): implement JWT authentication"
+git push origin feature/SCRUM-32-jwt-auth
+
+# Always update changelog
+# Edit CHANGELOG.md with folder context
+git add CHANGELOG.md
+git commit -m "docs: update changelog for JWT implementation"
+```
+
+## Team Collaboration
+
+### Code Review Guidelines
+- **Review for functionality**: Does it work as expected?
+- **Review for security**: Are there security implications?
+- **Review for maintainability**: Is the code readable and well-documented?
+- **Review for performance**: Are there performance concerns?
+- **Review for consistency**: Does it follow project standards?
+
+### Communication
+- **Link PRs to Jira tickets**: Always reference SCRUM-## numbers
+- **Discuss architectural changes**: Major changes need team input
+- **Document decisions**: Use PR discussions for context
+- **Be constructive**: Focus on improvement, not criticism
+
+## Troubleshooting
+
+### Common Issues
+1. **Merge conflicts**: `git rebase main` to update branch
+2. **Secrets in history**: Use `git filter-branch` or BFG Repo-Cleaner
+3. **Large repository**: Consider Git LFS for large files
+4. **Lost commits**: Use `git reflog` to find lost work
+
+### Recovery Commands
+```bash
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit (discard changes)
+git reset --hard HEAD~1
+
+# Recover deleted branch
+git checkout -b recovered-branch HEAD@{1}
+
+# Clean working directory
+git clean -fd
+git reset --hard HEAD
+```
+
+## Integration with Project Tools
+
+### Jira Integration
+- **Branch names reference tickets**: `feature/SCRUM-32-description`
+- **Commit messages reference tickets**: Include SCRUM-## in commits
+- **PR titles reference tickets**: [SCRUM-##] prefix required
+- **Automatic transitions**: Configure Jira to transition tickets on PR merge
+
+### Confluence Integration
+- **Link documentation updates**: Reference confluence pages in PRs
+- **Automatic updates**: CI pipeline updates project documentation
+- **Changelog synchronization**: Keep project docs in sync with code changes
+
+---
+
+**Remember**: Good git practices are essential for project success. When in doubt, create a branch, make atomic commits, and always update the changelog with folder context. The MVP demo deadline (July 18) requires disciplined version control to track progress and maintain code quality.
+
+**Last Updated**: July 2, 2025  
+**Review Frequency**: Monthly or when team practices change

@@ -1,0 +1,282 @@
+---
+description: Daily Rayces V3 Project Update - Sync Jira & Confluence
+globs: 
+  - "**/*"
+alwaysApply: false
+---
+
+# Rayces V3 Daily Project Update Rule
+
+## Purpose
+This rule performs a comprehensive daily update of all Rayces V3 project documentation and tracking across Jira and Confluence. Run this rule every morning to ensure all stakeholders have access to current, accurate project information.
+
+## Expected Outcome
+After running this rule:
+- ✅ All Confluence documentation reflects current Jira status
+- ✅ Milestone countdown timers are accurate  
+- ✅ Progress tracking is updated with latest completions
+- ✅ Risk assessments reflect current project state
+- ✅ Assignee information is synchronized
+- ✅ Sprint status and commitments are current
+- ✅ All dates and timestamps are updated
+
+---
+
+## Daily Update Process
+
+### STEP 1: Gather Current Project Status
+Please execute the following analysis:
+
+1. **Check Current Jira Project Status**
+   - Search for all issues in SCRUM project with current status
+   - Identify any status changes since last update
+   - Check for new stories, epics, or changes in assignees
+   - Verify current sprint status and active sprints
+   - Calculate current milestone countdown (July 18, 2025 and August 31, 2025)
+
+2. **Analyze Progress Changes**
+   - Compare current status with previous documentation
+   - Identify completed stories, status transitions, and blockers
+   - Calculate updated progress percentages for each epic
+   - Assess velocity and sprint commitments
+
+3. **Update Risk Assessment**
+   - Evaluate current risks based on timeline and progress
+   - Update probability and impact assessments
+   - Identify new risks or resolved issues
+
+### STEP 2: Update All Confluence Documentation
+
+Based on the current status analysis, update these Confluence pages in order:
+
+#### A. Homepage (Page ID: 65964)
+**Updates Required:**
+- Milestone countdown timers (calculate days remaining)
+- Current status percentages and sprint information
+- Risk dashboard with current high-priority risks
+- Team assignments and workload distribution
+- Recent updates section with today's date
+- Quick actions with any urgent items
+
+#### B. Epic & Story Tracking (Page ID: 66001)
+**Updates Required:**
+- All story statuses and assignee information
+- Progress percentages for each epic
+- Sprint assignments and commitments
+- Milestone tracking checkboxes
+- Burndown and velocity data
+- Definition of Done status
+- Last updated timestamp
+
+#### C. Milestone Timeline & Critical Dates (Page ID: 66119)
+**Updates Required:**
+- Real-time countdown timers
+- Sprint-by-sprint progress status
+- Risk assessment matrix with current probabilities
+- Success criteria completion status
+- Contingency plan activation if needed
+
+#### D. Project Plan (Page ID: 262145)
+**Updates Required:**
+- Timeline adjustments based on current progress
+- Success criteria tracking updates
+- Risk mitigation status updates
+- Reference material updates
+
+### STEP 3: Create Daily Status Summary
+
+Generate a brief daily status summary including:
+- **Progress Since Yesterday**: New completions, status changes
+- **Today's Priorities**: Most critical tasks and blockers
+- **Milestone Status**: Days remaining and trajectory
+- **Risk Updates**: New risks or mitigations
+- **Action Items**: Required decisions or escalations
+
+---
+
+## Automation Instructions
+
+### Data Collection Commands
+Execute these searches to gather current status:
+
+```
+1. Get all current issues and status:
+   - Search: "project = SCRUM ORDER BY updated DESC"
+   - Fields: summary, status, assignee, priority, issuetype, updated, progress
+
+2. Get epic progress:
+   - Search: "project = SCRUM AND issuetype = Epic ORDER BY updated DESC"
+   - Fields: summary, status, description, updated
+
+3. Check active sprints:
+   - Search: "project = SCRUM AND sprint in openSprints()"
+   - Identify any missing sprint structure
+
+4. Find recent changes:
+   - Search: "project = SCRUM AND updated >= -1d"
+   - Track daily progress
+```
+
+### Milestone Calculations
+```
+Calculate days remaining:
+- July 18, 2025 MVP Demo: Current date to July 18
+- August 31, 2025 Full Implementation: Current date to August 31
+
+Progress formulas:
+- Epic Progress = (Completed Stories / Total Stories) * 100
+- Overall Progress = Weighted average of critical epics
+- Velocity = Story points completed / Sprint time
+```
+
+### Risk Assessment Matrix
+```
+Evaluate each risk:
+- Timeline Risk = (Days Remaining / Planned Days) < 0.8 ? HIGH : MEDIUM
+- Resource Risk = Single assignee for > 5 critical stories ? HIGH : MEDIUM  
+- Technical Risk = Complex stories without clear definition ? MEDIUM : LOW
+- Integration Risk = Dependencies between unfinished components ? HIGH : MEDIUM
+```
+
+---
+
+## Confluence Update Templates
+
+### Homepage Status Section Template
+```markdown
+### **Current Status** 🟡
+
+* **Phase**: [Current Phase] ([Status])
+* **Progress**: [X]% Complete
+* **Active Sprint**: [Sprint Name] OR **No Active Sprint** ⚠️ (Sprint creation required)
+* **Next Milestone**: [Milestone] ([Date])
+* **Primary Developer**: [Assignee] ([X] critical stories assigned)
+```
+
+### Risk Dashboard Template
+```markdown
+| Risk | Impact | Probability | Status |
+| --- | --- | --- | --- |
+| **[Risk Name]** | [High/Medium/Low] | [High/Medium/Low] | 🔴/🟡/🟢 [Status] |
+```
+
+### Epic Progress Template
+```markdown
+| Epic | Target Date | Progress | Critical Level |
+| --- | --- | --- | --- |
+| **[Epic Name]** ([JIRA-KEY]) | [Date] | 🟫 [X]% | 🔥/⚠️/⏳ [Level] |
+```
+
+---
+
+## Quality Checks
+
+### Before Publishing Updates
+Verify these items:
+
+- [ ] **Date Accuracy**: All dates reflect current day (July X, 2025)
+- [ ] **Countdown Accuracy**: Milestone days remaining are mathematically correct
+- [ ] **Status Sync**: Jira status matches Confluence documentation
+- [ ] **Assignee Sync**: All assignee information is current
+- [ ] **Progress Logic**: Progress percentages make sense vs. completed work
+- [ ] **Risk Relevance**: Risk assessments reflect current project state
+- [ ] **Link Validity**: All Jira links and internal links are functional
+- [ ] **Formatting**: Tables, lists, and markdown render correctly
+
+### Escalation Triggers
+Immediately flag these situations:
+
+- 🚨 **Critical**: Milestone risk > 80% (less than 3 days buffer)
+- 🚨 **Critical**: No progress on critical path items for 48+ hours  
+- ⚠️ **High**: Single developer assigned to > 70% of critical work
+- ⚠️ **High**: No active sprints within 48 hours of sprint dates
+- ⚠️ **Medium**: Risk probability increased for existing high-impact risks
+
+---
+
+## Success Metrics
+
+### Daily Update Effectiveness
+Track these metrics:
+
+- **Documentation Freshness**: All pages updated within 24 hours
+- **Stakeholder Awareness**: Timeline and status accessible to all team members
+- **Risk Visibility**: Current risks clearly identified and tracked
+- **Progress Transparency**: Real progress vs. planned progress visible
+- **Action Clarity**: Next steps and priorities clearly defined
+
+### Weekly Review Checkpoints
+Every Friday, verify:
+
+- [ ] Week's progress accurately captured
+- [ ] Weekend/next week priorities established  
+- [ ] Risk mitigation plans updated
+- [ ] Stakeholder communication completed
+- [ ] Sprint retrospective items documented
+
+---
+
+## Emergency Procedures
+
+### Critical Timeline Risk (< 5 days to milestone)
+1. **Immediate escalation** to project sponsor
+2. **Daily updates** instead of daily reviews
+3. **Scope reduction** recommendations if needed
+4. **Resource reallocation** options identified
+5. **Contingency activation** timeline established
+
+### Blocked Critical Path
+1. **Immediate documentation** of blocker in all systems
+2. **Alternative path identification** within 4 hours
+3. **Resource reallocation** to resolve blocker
+4. **Stakeholder notification** with timeline impact
+5. **Daily review** until resolution
+
+---
+
+## Implementation Guidelines
+
+### Running This Rule
+1. **Execute daily** between 8:00-9:00 AM ART
+2. **Complete all steps** in sequence (don't skip analysis)
+3. **Verify updates** by reviewing each Confluence page
+4. **Document any anomalies** or manual interventions needed
+5. **Share summary** with key stakeholders if significant changes
+
+### Maintenance
+- **Weekly review**: Assess rule effectiveness and adjust
+- **Monthly optimization**: Update templates based on project evolution  
+- **Milestone reviews**: Comprehensive accuracy verification
+- **Post-project analysis**: Document lessons learned for future projects
+
+---
+
+**Created**: July 2, 2025  
+**Version**: 1.0  
+**Next Review**: July 9, 2025  
+**Owner**: Carlos Anriquez
+
+---
+
+## Quick Reference Commands
+
+### Key Confluence Page IDs
+- Homepage: 65964
+- Epic & Story Tracking: 66001  
+- Milestone Timeline: 66119
+- Project Plan: 262145
+- Technical Architecture: 393219
+- Development Guide: 425985
+- Security & Compliance: 262176
+
+### Key Jira Searches
+- All issues: `project = SCRUM ORDER BY updated DESC`
+- Recent changes: `project = SCRUM AND updated >= -1d`
+- Critical issues: `project = SCRUM AND priority = High`
+- Assigned to Carlos: `project = SCRUM AND assignee = "Carlos Anriquez"`
+- Active sprints: `project = SCRUM AND sprint in openSprints()`
+
+### Critical Dates
+- **July 18, 2025**: MVP Demo (Calculate days remaining daily)
+- **August 31, 2025**: Full Implementation (Calculate days remaining daily)
+- **December 31, 2025**: Complete Platform Launch

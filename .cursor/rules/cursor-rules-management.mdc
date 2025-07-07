@@ -1,0 +1,107 @@
+---
+description: Cursor Rules Management and Organization
+globs: .cursor/rules/*.mdc
+---
+
+# Cursor Rules Management
+
+## Rule Organization Standards
+
+### File Naming Convention
+- Use kebab-case for rule filenames
+- Include the main topic or domain
+- Add `-standards` or `-practices` suffix for comprehensive rules
+- Examples: `git-best-practices.mdc`, `rails-api-standards.mdc`, `nextjs-conventions.mdc`
+
+### Rule Categories
+```
+git-best-practices.mdc          # Version control standards
+rails-api-standards.mdc         # Rails backend development
+nextjs-conventions.mdc          # Frontend development
+security-guidelines.mdc         # Security practices
+deployment-procedures.mdc       # CI/CD and deployment
+project-management.mdc          # Jira/Confluence integration
+testing-standards.mdc           # Testing frameworks and practices
+database-migrations.mdc         # Database management
+api-design-standards.mdc        # API design and documentation
+```
+
+### Frontmatter Guidelines
+
+#### Always Apply Rules (Core Standards)
+```yaml
+---
+alwaysApply: true
+description: Brief description of the rule
+---
+```
+
+#### File-Specific Rules
+```yaml
+---
+globs: "*.rb,*.erb"
+description: Ruby and Rails specific standards
+---
+```
+
+#### Manual Application Rules
+```yaml
+---
+description: Specific task or workflow guidance
+alwaysApply: false
+---
+```
+
+### Rule Structure Template
+```markdown
+---
+# Frontmatter configuration
+---
+
+# Rule Title
+
+## Purpose
+Brief description of what this rule covers
+
+## Standards/Guidelines
+Detailed standards and practices
+
+## Examples
+Code examples and usage patterns
+
+## Anti-Patterns
+What to avoid
+
+## Integration
+How this rule integrates with other tools/practices
+
+---
+**Last Updated**: Date
+**Review Frequency**: How often to review
+```
+
+### Cross-Rule References
+When referencing files or other rules:
+- Use `[filename.ext](mdc:filename.ext)` for file references
+- Reference other rules by their clear purpose
+- Maintain consistency across all rules
+
+### Maintenance Schedule
+- **Weekly**: Review project-specific rules during sprint planning
+- **Monthly**: Update all rules for consistency
+- **Quarterly**: Major rule refactoring and cleanup
+- **On Project Changes**: Update affected rules immediately
+
+### Rule Validation Checklist
+- [ ] Frontmatter is properly formatted
+- [ ] Description is clear and concise
+- [ ] Examples are relevant to the Rayces V3 project
+- [ ] File references use correct `mdc:` syntax
+- [ ] No conflicts with other rules
+- [ ] Covers both do's and don'ts
+- [ ] Includes project-specific context
+
+---
+
+**Last Updated**: July 2, 2025
+**Review Frequency**: Monthly or when rule standards change
