@@ -1,0 +1,269 @@
+# Architecture Documentation Maintenance Rules
+
+## Overview
+This rule ensures that `/docs/admin/architecture.md` remains current and synchronized with the actual codebase, Jira project status, and Confluence documentation. The architecture document serves as the single source of truth for Rayces V3 system design.
+
+## Automatic Update Triggers
+
+### 🔄 When to Update the Architecture Document
+
+#### **IMMEDIATE Updates Required**
+1. **Sprint Status Changes** - When Jira stories are completed, moved, or reassigned
+2. **Database Schema Changes** - When new migrations are added to `rails-api/db/migrate/`
+3. **Technology Stack Changes** - When `Gemfile`, `package.json`, or dependencies are updated
+4. **API Endpoint Changes** - When `rails-api/config/routes.rb` is modified
+5. **Infrastructure Changes** - When files in `k8s/` directory are modified
+6. **Security Configuration Changes** - When authentication, authorization, or security gems are updated
+
+#### **DAILY Updates Required**
+1. **Sprint Progress Tracking** - Sync with Jira story status for current sprint
+2. **Technology Version Tracking** - Check for dependency updates
+3. **Performance Metrics Updates** - Update current system performance data
+
+#### **WEEKLY Updates Required**
+1. **Architecture Evolution Roadmap** - Update phase completion status
+2. **Integration Status Updates** - Update external service integration progress
+3. **Security Compliance Updates** - Update security implementation checklist
+
+## 📊 Document Sections Requiring Updates
+
+### **System Overview** - Update When:
+- Project vision or scope changes
+- Architecture principles are modified
+- System context diagram needs updates
+
+### **Technology Stack** - Update When:
+- `rails-api/Gemfile` is modified
+- `nextjs/package.json` is modified
+- New gems or npm packages are added
+- Version numbers change
+
+### **Sprint Architecture Responsibilities** - Update When:
+- Jira stories change status (To Do → In Progress → Done)
+- New sprint is planned
+- Sprint scope changes
+- Story point assignments change
+- MVP demo date approaches (countdown updates)
+
+### **Database Design** - Update When:
+- New migration files are added to `rails-api/db/migrate/`
+- Schema.rb is updated
+- New models are created
+- Database indexes are added
+
+### **API Architecture** - Update When:
+- `rails-api/config/routes.rb` is modified
+- New controllers are added to `rails-api/app/controllers/`
+- API response formats change
+- Authentication middleware is updated
+
+### **Frontend Architecture** - Update When:
+- Next.js configuration changes (`nextjs/next.config.mjs`)
+- New pages are added to `nextjs/src/app/`
+- State management patterns change
+- Authentication flow is modified
+
+### **Infrastructure & Deployment** - Update When:
+- Kubernetes manifests in `k8s/` are modified
+- Docker configuration changes
+- CI/CD pipeline updates
+- Environment configuration changes
+
+### **Security Architecture** - Update When:
+- Security gems are added or updated
+- Authentication configuration changes
+- Authorization policies are modified
+- Security headers or CORS settings change
+
+### **Performance & Scalability** - Update When:
+- Performance targets change
+- Monitoring configuration is updated
+- Caching strategies are modified
+- Load balancing configuration changes
+
+### **Document Maintenance Rules** - Update When:
+- New update triggers are identified
+- Update frequency requirements change
+- Responsibility matrix needs modification
+
+## 🔧 Update Implementation Guidelines
+
+### **For Code Changes**
+When files matching the following patterns are modified, check if architecture document needs updates:
+
+```
+# Backend changes requiring architecture updates
+rails-api/Gemfile → Update Technology Stack section
+rails-api/config/routes.rb → Update API Architecture section
+rails-api/db/migrate/*.rb → Update Database Design section
+rails-api/app/models/*.rb → Update Database Design and Multi-tenant Architecture
+rails-api/app/controllers/*.rb → Update API Architecture section
+
+# Frontend changes requiring architecture updates  
+nextjs/package.json → Update Technology Stack section
+nextjs/src/app/**/page.tsx → Update Frontend Architecture section
+nextjs/next.config.mjs → Update Frontend Architecture section
+
+# Infrastructure changes requiring architecture updates
+k8s/*.yaml → Update Infrastructure & Deployment section
+k8s/*.yml → Update Infrastructure & Deployment section
+skaffold.yaml → Update Infrastructure & Deployment section
+
+# Documentation changes requiring architecture updates
+CHANGELOG.md → Update Document Maintenance Rules section
+```
+
+### **For Sprint/Project Changes**
+When working on Jira stories or sprint planning:
+
+1. **Story Status Updates**: Update sprint responsibility tables
+2. **Sprint Completion**: Move completed items from "To Do" to "Completed"
+3. **New Sprint Planning**: Add new sprint details and update countdown timers
+4. **MVP Demo Preparation**: Update critical milestone information
+
+### **For External Integration**
+When adding or modifying external service integrations:
+
+1. **Update Integration Architecture section** with new service details
+2. **Update Technology Stack** if new SDKs or libraries are added
+3. **Update Security Architecture** if new authentication methods are added
+4. **Update Environment Configuration** if new environment variables are needed
+
+## 🎯 Quality Assurance for Updates
+
+### **Before Updating Architecture Document**
+1. **Verify Current State**: Check actual codebase status against document claims
+2. **Cross-Reference**: Confirm details with Jira and Confluence
+3. **Test Claims**: Ensure all architectural assertions are accurate
+4. **Update Dependencies**: Check if other sections need updates
+
+### **After Updating Architecture Document**
+1. **Consistency Check**: Ensure all related sections are synchronized
+2. **Link Validation**: Verify all internal and external links work
+3. **Version Update**: Update document version and last modified date
+4. **Change Documentation**: Add entry to CHANGELOG.md with details
+
+## 📝 Update Format Standards
+
+### **Section Headers**: Maintain consistent emoji and formatting
+### **Tables**: Keep column alignment and sorting consistent
+### **Code Examples**: Ensure all code examples are current and functional
+### **Mermaid Diagrams**: Update diagrams to reflect current architecture
+### **Status Indicators**: Use consistent status symbols (✅, 🔄, 📋, 📊)
+
+### **Change Attribution Format**
+```markdown
+**Last Updated:** July 6, 2025  
+**Version:** 1.1  
+**Changes:** Updated Sprint 1 status, added new technology stack details  
+**Author:** [Agent/User Name]  
+**Trigger:** Database migration added for Organizations model
+```
+
+## ⚠️ Critical Update Requirements
+
+### **Never Skip Updates For:**
+1. **Security-related changes** - Always update security sections immediately
+2. **Database schema changes** - Always update ERD and migration status
+3. **Sprint milestone changes** - Always update countdown and critical dates
+4. **API breaking changes** - Always update API documentation
+5. **Infrastructure changes** - Always update deployment architecture
+
+### **Validation Requirements**
+Before considering an architecture document update complete:
+
+- [ ] All modified sections reflect current reality
+- [ ] Sprint status matches Jira current state
+- [ ] Technology versions match actual dependencies
+- [ ] Database design matches current schema
+- [ ] API documentation matches current routes
+- [ ] Infrastructure reflects current K8s configuration
+- [ ] Security requirements match current implementation
+- [ ] Performance targets are realistic and current
+- [ ] Document version and date are updated
+- [ ] CHANGELOG.md entry is added
+
+## 🔗 Integration with Other Rules
+
+### **Confluence Documentation Rule**
+When updating architecture document, also check if Confluence pages need updates:
+- Technical Architecture page (ID: 393219)
+- Project Plan page (ID: 262145)
+- Home page (ID: 65964)
+
+### **Git Best Practices Rule**
+When updating architecture document:
+- Use descriptive commit messages referencing the trigger
+- Tag commits with architecture-related changes
+- Include architecture impact in PR descriptions
+
+### **Rails Development Standards**
+When Rails changes trigger architecture updates:
+- Verify multi-tenancy implementation details
+- Update RBAC policy information
+- Check state machine configurations
+
+### **Next.js Development Standards**
+When frontend changes trigger architecture updates:
+- Verify authentication flow details
+- Update component architecture patterns
+- Check internationalization configuration
+
+## 📊 Success Metrics
+
+### **Document Freshness**
+- Architecture document should never be >7 days out of sync with reality
+- Critical sections (Sprint Responsibilities) should be daily-current
+- Technology stack should reflect actual dependencies within 24 hours
+
+### **Accuracy Metrics**
+- 100% of documented API endpoints should exist in routes.rb
+- 100% of documented database models should exist in schema.rb  
+- 100% of documented K8s resources should exist in k8s/ directory
+- 100% of documented technologies should exist in dependency files
+
+### **Completeness Metrics**
+- All active Jira stories should be reflected in sprint sections
+- All implemented features should be documented
+- All external integrations should be documented
+- All security measures should be documented
+
+---
+
+## Usage Guidelines
+
+### **For AI Agents**
+When any of the trigger conditions are met:
+
+1. **Identify** which sections of the architecture document need updates
+2. **Gather** current information from codebase, Jira, and Confluence
+3. **Update** only the relevant sections that have changed
+4. **Validate** that updates are accurate and complete
+5. **Document** the change in CHANGELOG.md
+
+### **For Human Developers**
+When making changes that trigger architecture updates:
+
+1. **Check** if your changes affect documented architecture
+2. **Note** which sections need updates in your PR description
+3. **Request** architecture document updates in your PR
+4. **Review** updated architecture document for accuracy
+
+### **For Project Management**
+When sprint or project changes occur:
+
+1. **Verify** architecture document reflects current project state
+2. **Request** updates for outdated sprint information
+3. **Ensure** milestone dates and countdown timers are current
+4. **Confirm** team assignments match documented responsibilities
+
+---
+
+**Rule Status**: 🟢 Active and Required  
+**Enforcement Level**: Mandatory  
+**Review Frequency**: Monthly  
+**Last Updated**: July 6, 2025
+
+---
+
+*This rule ensures that the architecture document remains the authoritative and current source of truth for Rayces V3 system design, enabling all stakeholders to make informed decisions based on accurate information.*
