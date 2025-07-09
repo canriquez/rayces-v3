@@ -1,10 +1,25 @@
-# CLAUDE.md - Rayces Integrated Platform Project Guidelines
+# CLAUDE.md - Rayces V3 MVP Project Guidelines
 
 ## Project Overview
-Rayces is a multi-tenant SaaS platform for managing educational/therapeutic services with appointment booking, student lifecycle management, and AI-powered reporting. The platform serves organizations that provide therapeutic and educational services, with support for multiple user roles, credit systems, and automated workflows.
+Rayces V3 is a multi-tenant SaaS platform for managing educational/therapeutic services with appointment booking, student lifecycle management, and AI-powered reporting. The platform serves organizations that provide therapeutic and educational services, with support for multiple user roles, credit systems, and automated workflows.
+
+**Building on MyHub Foundation**: The project extends the existing MyHub social media platform rather than building from scratch, leveraging operational Rails API, PostgreSQL database, and containerization infrastructure.
 
 # Project's Github Repository
 https://github.com/canriquez/rayces-v3
+
+## 🚨 Critical Timeline Status (July 8, 2025)
+
+### Key Milestones
+- **MVP Demo**: July 18, 2025 (⏰ **10 days remaining**)
+- **Full Implementation**: August 31, 2025 (54 days remaining)
+- **Current Sprint**: Sprint 1 (July 1-8, 2025) - Foundation Development
+
+### Current Status
+- **Sprint 1**: 6 stories, 42 story points, Carlos Anriquez assigned
+- **SCRUM-32**: Rails 7 API Application setup - **IN PROGRESS**
+- **Documentation**: All docs/admin/ synchronized with Jira/Confluence
+- **GitHub Issues**: All Sprint 1 stories created with detailed implementation guides
 
 ## Critical Development Rules
 
@@ -26,46 +41,66 @@ Example:
 ## [Unreleased]
 
 ### Added
-- 2025-06-28 [Cursor] rails-api/: Added `Appointment` model with AASM state machine for booking lifecycle. Implements booking lifecycle as per architecture v1.0.
-- 2025-06-28 [Cursor] nextjs/: Created appointment booking wizard component in `/features/booking/`. Adds multi-step UI for appointment flow.
+- 2025-07-08 [Cursor] rails-api/: Added `Organization` model with acts_as_tenant setup. Implements multi-tenancy as per SCRUM-33.
+- 2025-07-08 [Cursor] nextjs/: Created booking wizard component in `/features/booking/`. Adds multi-step UI for appointment flow.
 ```
 
 ### 2. Always Check Before Starting
 - Run `git status` to see current state
 - Check CHANGELOG.md for recent changes
 - Verify which branch you're on
+- Review current Sprint 1 GitHub issues for context
+
+## MyHub Foundation Context
+
+### Existing Operational Components
+- ✅ **Rails 7 API**: User, Post, Like models with full CRUD operations
+- ✅ **PostgreSQL Database**: Properly configured with migrations
+- ✅ **Google OAuth**: User authentication via NextAuth.js integration
+- ✅ **Docker Infrastructure**: Containerization for rails-api/, nextjs/, k8s/
+- ✅ **Kubernetes Manifests**: Deployment configurations operational
+- ✅ **RSpec Testing**: Framework with FactoryBot and request specs
+- ✅ **Social Media Features**: Post creation, likes, user interactions
+
+### Extension Strategy
+**Building Upon (Not Replacing)**:
+- User model → Add organization_id, extend with professional/client profiles
+- Authentication → Add JWT tokens, role-based access control
+- Database → Add multi-tenancy, appointment system, credit management
+- Frontend → Add booking interface, administrative features
+- Infrastructure → Add production-ready optimizations, health checks
 
 ## Technology Stack
 
-### Backend (Rails API)
-- **Rails 7** in API-only mode
+### Backend (Rails API) - Building on MyHub
+- **Rails 7** in API-only mode (✅ **Operational**)
 - **PostgreSQL** database with multi-tenancy via `acts_as_tenant`
-- **JWT Authentication** via Devise + devise-jwt
-- **OmniAuth** for SSO (Google & Facebook)
+- **JWT Authentication** via Devise + devise-jwt (extending existing Google OAuth)
+- **OmniAuth** for SSO (Google & Facebook) - ✅ **Google working**
 - **Pundit** for Role-Based Access Control (RBAC)
 - **AASM** for appointment state machine
 - **Sidekiq** + **Redis** for background jobs
 - **ActionCable** for real-time updates
 - **Mercado Pago** for payment processing
-- **RSpec** for testing
+- **RSpec** for testing (✅ **Operational**)
 - **I18n** with es-AR (default) and en locales
 
-### Frontend (Next.js)
-- **Next.js 14+** with App Router (NOT Pages Router)
+### Frontend (Next.js) - Building on MyHub
+- **Next.js 14+** with App Router (✅ **Operational**)
 - **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **NextAuth.js** for authentication
+- **Tailwind CSS** for styling (✅ **Operational**)
+- **NextAuth.js** for authentication (✅ **Google OAuth working**)
 - **Zustand** for UI state management
 - **Tanstack Query** for API state management
 - **next-intl** for internationalization
 - **React Server Components** by default
 - Mark client components with `'use client'` only when needed
 
-### Infrastructure & Integrations
-- **Kubernetes** for orchestration
+### Infrastructure & Integrations - Building on MyHub
+- **Kubernetes** for orchestration (✅ **Operational**)
 - **Skaffold** for local development
-- **Docker** for containerization
-- **GitHub Actions** for CI/CD
+- **Docker** for containerization (✅ **Operational**)
+- **GitHub Actions** for CI/CD (to be enhanced)
 - **WhatsApp Business API** for voice note reports
 - **n8n** for AI workflow orchestration
 - **Brakeman** for security scanning
@@ -76,12 +111,14 @@ Example:
 - Organization-based tenancy with subdomain resolution
 - All models scoped to organization via `acts_as_tenant`
 - Tenant isolation enforced at controller and policy level
+- **Extension**: Add organization_id to existing User model
 
-### User Roles
+### User Roles (Extending MyHub User)
 - **Admin** (Director): Full organization access, analytics, configuration
 - **Professional**: Manages schedule, students, creates reports
 - **Staff** (Secretary): Manages appointments, billing, client support
 - **Parent**: Books appointments, views student progress, manages credits
+- **Base User**: Existing MyHub social media functionality preserved
 
 ### Appointment States (AASM)
 1. `draft` → Initial state
@@ -101,22 +138,25 @@ Example:
 - All migrations must be reversible
 - Use decimal for monetary values, never float
 - Background jobs must be idempotent
+- **Extend existing User/Post/Like models** rather than replacing
 
 ### Next.js Standards
-- Use App Router structure
+- Use App Router structure (✅ **Operational**)
 - Server Components by default
 - Implement loading.tsx and error.tsx for each route
 - Use next/image for optimized images
 - Follow mobile-first responsive design
 - Implement proper SEO with metadata
 - Ensure accessibility compliance
+- **Build upon existing Feed/Post/User components**
 
 ### Testing Requirements
-- **Rails**: RSpec for models, requests, policies
+- **Rails**: RSpec for models, requests, policies (✅ **Framework operational**)
 - **Next.js**: React Testing Library, Cypress/Playwright for E2E
 - Test all state transitions
 - Test authorization for all endpoints
 - Include negative and edge cases
+- **Test multi-tenancy isolation**
 
 ### Security Requirements
 - Never commit secrets
@@ -129,25 +169,31 @@ Example:
 ## Project Structure
 ```
 rayces-v3/
-├── CHANGELOG.md          # MUST MAINTAIN!
-├── rails-api/           # Backend Rails API
+├── CHANGELOG.md               # MUST MAINTAIN!
+├── docs/admin/               # Project documentation (UPDATED)
+│   ├── PROJECT_STATUS_UPDATE.md
+│   ├── MILESTONE_TIMELINE.md
+│   ├── CONFLUENCE_WEEKLY_UPDATE.md
+│   ├── architecture.md
+│   └── rayces_jira_epic_description.md
+├── rails-api/                # Backend Rails API (MyHub base)
 │   ├── app/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── policies/    # Pundit policies
-│   │   ├── serializers/
-│   │   └── workers/     # Sidekiq jobs
+│   │   ├── controllers/      # User, Post, Like controllers exist
+│   │   ├── models/           # User, Post, Like models exist
+│   │   ├── policies/         # Pundit policies (to be added)
+│   │   ├── serializers/      # API serializers
+│   │   └── workers/          # Sidekiq jobs
 │   ├── config/
-│   ├── db/
-│   └── spec/           # RSpec tests
-├── nextjs/             # Frontend Next.js
+│   ├── db/                   # Migrations for User, Post, Like exist
+│   └── spec/                 # RSpec tests (operational)
+├── nextjs/                   # Frontend Next.js (MyHub base)
 │   ├── src/
-│   │   ├── app/        # App Router
-│   │   ├── components/
-│   │   └── features/   # Feature modules
+│   │   ├── app/              # App Router (operational)
+│   │   ├── components/       # UI components (Feed, Post, etc.)
+│   │   └── features/         # Feature modules (to be added)
 │   └── public/
-├── k8s/                # Kubernetes manifests
-└── skaffold.yaml       # Skaffold config
+├── k8s/                      # Kubernetes manifests (operational)
+└── skaffold.yaml             # Skaffold config
 ```
 
 ## Commands to Run
@@ -190,11 +236,53 @@ skaffold dev
 skaffold run
 ```
 
-## Jira Epic Structure
+## Sprint 1 - Foundation Development (July 1-8, 2025)
 
-The project is organized into 9 epics with specific tasks:
+### Current Status: 6 Stories, 42 Story Points, Carlos Anriquez
 
-### Phase 1: Core Platform (Epics 1-6)
+#### **SCRUM-32** - Rails 7 API Application & Core Gems *(8 pts)* 
+- **Status**: 🔄 **IN PROGRESS**
+- **GitHub Issue**: [#10](https://github.com/canriquez/rayces-v3/issues/10)
+- **Focus**: Extend MyHub foundation with booking-specific gems
+- **Key gems**: acts_as_tenant, pundit, aasm, sidekiq, devise-jwt
+
+#### **SCRUM-33** - Multi-Tenancy with acts_as_tenant *(5 pts)*
+- **Status**: 📋 **TO DO**
+- **GitHub Issue**: [#11](https://github.com/canriquez/rayces-v3/issues/11)
+- **Focus**: Add organization_id to User model, implement tenant isolation
+- **Depends**: SCRUM-32
+
+#### **SCRUM-34** - i18n Framework Configuration *(3 pts)*
+- **Status**: 📋 **TO DO**
+- **GitHub Issue**: [#12](https://github.com/canriquez/rayces-v3/issues/12)
+- **Focus**: Spanish (es-AR) and English support
+- **Depends**: SCRUM-32
+
+#### **SCRUM-35** - Database Migrations & Models *(13 pts)*
+- **Status**: 📋 **TO DO**
+- **GitHub Issue**: [#13](https://github.com/canriquez/rayces-v3/issues/13)
+- **Focus**: Professional/Client profiles, appointments, RBAC
+- **Depends**: SCRUM-33, SCRUM-34
+
+#### **SCRUM-36** - CI/CD Pipeline Enhancement *(5 pts)*
+- **Status**: 📋 **TO DO**
+- **GitHub Issue**: [#14](https://github.com/canriquez/rayces-v3/issues/14)
+- **Focus**: GitHub Actions for testing, deployment, security
+- **Depends**: SCRUM-32
+
+#### **SCRUM-37** - Container & K8s Optimization *(8 pts)*
+- **Status**: 📋 **TO DO**
+- **GitHub Issue**: [#15](https://github.com/canriquez/rayces-v3/issues/15)
+- **Focus**: Production-ready Docker, K8s with health checks
+- **Depends**: SCRUM-32
+
+## Epic Structure (10 Epics, 44 Stories)
+
+### **EPIC SCRUM-21: RaycesV3-MVP** (Master Epic)
+- **Status**: 20% Complete (SCRUM-32 in progress)
+- **Confluence**: [Epic & Story Tracking](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66001)
+
+### Phase 1: Foundation (Sprint 1-3)
 1. **EPIC1: Platform Foundation** - Rails setup, multi-tenancy, i18n, CI/CD
 2. **EPIC2: User IAM** - Authentication (Devise/JWT), SSO, RBAC with Pundit
 3. **EPIC3: Frontend Scaffolding** - Next.js setup, auth flows, UI components
@@ -202,30 +290,34 @@ The project is organized into 9 epics with specific tasks:
 5. **EPIC5: Client Booking** - Booking flow, cancellations, credit system
 6. **EPIC6: Student Management** - Student records, documents, admissions
 
-### Phase 2: Advanced Features (Epics 7-9)
+### Phase 2: Advanced Features (Sprint 4-6)
 7. **EPIC7: Monetization** - Mercado Pago integration, subscriptions
 8. **EPIC8: AI Reporting** - WhatsApp voice notes, n8n orchestration
 9. **EPIC9: Analytics** - KPI aggregation, executive dashboard
+10. **EPIC10: Platform Optimization** - Performance, security, scalability
 
 ## Current Implementation Status
-- ✅ Basic project structure initialized
-- ✅ Kubernetes deployment configs
-- ✅ Jira tickets created for all epics
-- ❌ CHANGELOG.md (NEEDS CREATION - Critical!)
-- ❌ Multi-tenancy setup (EPIC1-TASK2)
-- ❌ Organization model
-- ❌ User authentication (EPIC2-TASK1)
-- ❌ Core domain models
-- ❌ RBAC policies
-- ❌ Frontend auth setup
 
-## Immediate Next Steps (Follow Jira Tickets)
-1. **Create CHANGELOG.md** at project root (Critical requirement!)
-2. **EPIC1-TASK1**: Initialize Rails 7 API with core gems
-3. **EPIC1-TASK2**: Implement multi-tenancy with acts_as_tenant
-4. **EPIC1-TASK3**: Configure i18n framework
-5. **EPIC1-TASK4**: Create initial migrations
-6. **EPIC1-TASK5**: Set up CI/CD pipeline
+### ✅ Operational (MyHub Foundation)
+- Rails 7 API with User, Post, Like models
+- PostgreSQL database with migrations
+- Google OAuth authentication (NextAuth.js)
+- Next.js App Router with Tailwind CSS
+- Docker containers and Kubernetes manifests
+- RSpec testing framework
+- Basic social media functionality
+
+### 🔄 In Progress (Sprint 1)
+- **SCRUM-32**: Rails 7 API enhancement with booking gems
+- Documentation synchronization with Jira/Confluence
+- GitHub Issues creation for development tracking
+
+### 📋 Pending (Sprint 1 Completion)
+- Multi-tenancy implementation
+- i18n framework setup
+- Database migrations for booking system
+- CI/CD pipeline enhancement
+- Container optimization
 
 ## Key Business Features
 
@@ -261,6 +353,7 @@ The project is organized into 9 epics with specific tasks:
 - Consistent error responses
 - Tenant-scoped data access
 - JWT tokens include user, role, and organization
+- **Build upon existing User/Post/Like endpoints**
 
 ### Security & Testing
 - Every endpoint requires Pundit authorization
@@ -275,10 +368,64 @@ The project is organized into 9 epics with specific tasks:
 - API client with automatic JWT attachment
 - Real-time updates via Action Cable
 - Responsive design with mobile-first approach
+- **Extend existing Feed/Post/User components**
+
+## Documentation & Project Management
+
+### Jira Integration
+- **Project**: SCRUM
+- **Epic**: SCRUM-21 (RaycesV3-MVP)
+- **Sprint 1**: 6 stories, 42 story points
+- **All tickets**: Detailed descriptions with acceptance criteria
+
+### Confluence Documentation
+- **Home Page**: [https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/65964](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/65964)
+- **Epic Tracking**: [https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66001](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66001)
+- **Timeline**: [https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66119](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66119)
+
+### GitHub Issues
+- **Sprint 1**: Issues #10-#15 with comprehensive implementation guides
+- **Self-explanatory**: Each issue contains complete context for developers
+- **Dependency tracking**: Clear relationships between stories
+
+## Critical Success Factors
+
+### MVP Demo Success (July 18, 2025)
+- **Sprint 1 completion**: Essential for Sprint 2 & 3 planning
+- **Foundation stability**: Multi-tenancy, authentication, basic booking
+- **Demo preparation**: Working appointment booking flow
+- **Documentation**: Keep all docs/admin/ files synchronized
+
+### Development Priorities
+1. **Complete SCRUM-32**: Rails 7 API with core gems
+2. **Multi-tenancy setup**: Enable organization-based data isolation
+3. **Database foundation**: Core models for booking system
+4. **Authentication enhancement**: JWT tokens with role-based access
+5. **Frontend scaffolding**: Booking interface components
 
 ## Important Notes
-- **Critical**: This project currently has boilerplate code that must be replaced according to Jira tickets
+
+### Building on MyHub Foundation
+- **DO NOT** replace existing User, Post, Like functionality
+- **EXTEND** existing models with organization_id and new relationships
+- **PRESERVE** existing Google OAuth authentication
+- **ENHANCE** existing components with booking-specific features
+- **MAINTAIN** backward compatibility with MyHub social features
+
+### Critical Requirements
 - **Always** update CHANGELOG.md with folder context for every change
-- **Follow** the epic/task structure defined in Jira
+- **Follow** Sprint 1 GitHub issues for detailed implementation guidance
 - **Test** multi-tenant isolation in every feature
-- **Document** API contracts early for frontend development
+- **Maintain** documentation synchronization between local docs and Confluence
+- **Track** progress against MVP demo deadline (July 18, 2025)
+
+### Development Workflow
+1. Check current Sprint 1 GitHub issues for active tasks
+2. Review CHANGELOG.md for recent changes
+3. Implement changes following issue acceptance criteria
+4. Update CHANGELOG.md with folder context
+5. Run tests to ensure no regressions
+6. Update documentation if needed
+
+**Last Updated**: July 8, 2025  
+**Next Review**: Weekly during Sprint 1, or when major milestones are reached
