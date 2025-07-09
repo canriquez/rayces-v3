@@ -31,13 +31,16 @@
 ### Platform Vision
 Rayces V3 is a comprehensive multi-tenant SaaS platform designed for educational and health institutions, providing end-to-end booking management, student lifecycle tracking, automated billing, AI-powered reporting, and executive analytics.
 
+**Built on MyHub Social Media Foundation**: This platform leverages an existing, fully functional social media application (MyHub) that provides the authentication system, API structure, UI components, and database models. The booking platform is built by extending and refactoring these existing components rather than building from scratch.
+
 ### Architecture Principles
-- **Multi-tenancy**: Organization-based data isolation with subdomain routing
-- **API-First**: RESTful Rails 7 API with stateless JWT authentication
-- **Modern Frontend**: Next.js 14 with App Router and TypeScript
-- **Container-Native**: Kubernetes deployment with Docker containers
-- **Event-Driven**: Background jobs with Sidekiq for async processing
-- **Security-First**: RBAC with Pundit, encrypted data, secure communication
+- **Foundation Reuse**: Extend existing MyHub social media components and models
+- **Multi-tenancy**: Organization-based data isolation with subdomain routing (added to existing structure)
+- **API-First**: RESTful Rails 7 API with stateless JWT authentication (existing + extensions)
+- **Modern Frontend**: Next.js 14 with App Router and TypeScript (existing + booking UI)
+- **Container-Native**: Kubernetes deployment with Docker containers (evolved from docker-compose)
+- **Event-Driven**: Background jobs with Sidekiq for async processing (extend existing)
+- **Security-First**: RBAC with Pundit, encrypted data, secure communication (extend existing auth)
 
 ### System Context Diagram
 ```mermaid
@@ -82,40 +85,73 @@ graph TB
     API --> S3
 ```
 
+### MyHub Foundation Architecture
+
+**Current Foundation Components** (Operational in MyHub):
+- **User Management**: Complete authentication with Google OAuth
+- **Post System**: User posts with likes/comments functionality
+- **Feed Interface**: Real-time social media feed with live updates
+- **API Structure**: RESTful Rails 7 API with standard CRUD operations
+- **Database Models**: User, Post, Like models with proper relationships
+- **Frontend Components**: Next.js components for Feed, Post, IconActions, Sidebar
+- **Authentication Flow**: NextAuth.js with Google OAuth integration
+- **Real-time Features**: ActionCable for WebSocket communications
+
+**Rayces V3 Extensions** (Building on Foundation):
+- **Multi-tenancy**: Organization-based data isolation for booking platform
+- **Professional Profiles**: Extend User model with professional capabilities
+- **Appointment System**: Transform Post model concepts into booking system
+- **Calendar Interface**: Adapt Feed components for availability management
+- **Role-Based Access**: Extend authentication with Pundit for booking permissions
+- **Email Notifications**: Extend existing system for booking confirmations
+- **Credit Management**: Add payment and credit tracking to existing models
+
 ---
 
 ## 🛠️ Technology Stack
 
-### Backend Stack
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Framework** | Ruby on Rails | 7.1+ | API-only backend framework |
-| **Language** | Ruby | 3.2+ | Server-side programming language |
-| **Database** | PostgreSQL | 15+ | Primary relational database |
-| **Cache/Queue** | Redis | 7+ | Caching and job queue storage |
-| **Background Jobs** | Sidekiq | 7+ | Asynchronous job processing |
-| **Authentication** | Devise + devise-jwt | Latest | JWT-based stateless auth |
-| **Authorization** | Pundit | Latest | Policy-based access control |
-| **Multi-tenancy** | acts_as_tenant | Latest | Organization data isolation |
-| **State Machines** | AASM | Latest | Appointment workflow management |
-| **File Storage** | Active Storage + S3 | Latest | Document and file management |
-| **Testing** | RSpec + FactoryBot | Latest | Test framework and factories |
-| **API Documentation** | OpenAPI/Swagger | Latest | API specification |
+### Backend Stack (Built on MyHub Foundation)
+| Component | Technology | Version | Purpose | Foundation Status |
+|-----------|------------|---------|---------|------------------|
+| **Framework** | Ruby on Rails | 7.1+ | API-only backend framework | ✅ Operational (MyHub) |
+| **Language** | Ruby | 3.2+ | Server-side programming language | ✅ Operational (MyHub) |
+| **Database** | PostgreSQL | 15+ | Primary relational database | ✅ Operational (MyHub) |
+| **Cache/Queue** | Redis | 7+ | Caching and job queue storage | ✅ Operational (MyHub) |
+| **Background Jobs** | Sidekiq | 7+ | Asynchronous job processing | ✅ Operational (MyHub) |
+| **Authentication** | Devise + devise-jwt | Latest | JWT-based stateless auth | ✅ Operational (MyHub) |
+| **Authorization** | Pundit | Latest | Policy-based access control | 🔄 Extension (RBAC) |
+| **Multi-tenancy** | acts_as_tenant | Latest | Organization data isolation | 🔄 Extension (New) |
+| **State Machines** | AASM | Latest | Appointment workflow management | 🔄 Extension (New) |
+| **File Storage** | Active Storage + S3 | Latest | Document and file management | 🔄 Extension (New) |
+| **Testing** | RSpec + FactoryBot | Latest | Test framework and factories | ✅ Operational (MyHub) |
+| **API Documentation** | OpenAPI/Swagger | Latest | API specification | 🔄 Extension (New) |
 
-### Frontend Stack
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Framework** | Next.js | 14+ | React-based frontend framework |
-| **Language** | TypeScript | 5+ | Type-safe JavaScript |
-| **Styling** | Tailwind CSS | 3+ | Utility-first CSS framework |
-| **UI Components** | Shadcn/UI | Latest | Reusable component library |
-| **State Management** | Zustand + Context | Latest | Client and server state |
-| **Data Fetching** | TanStack Query | Latest | Server state management |
-| **Authentication** | NextAuth.js | Latest | Frontend authentication |
-| **Forms** | React Hook Form + Zod | Latest | Form handling and validation |
-| **Testing** | Jest + RTL | Latest | Unit and component testing |
-| **E2E Testing** | Playwright | Latest | End-to-end testing |
-| **Internationalization** | next-intl | Latest | Multi-language support |
+### Frontend Stack (Built on MyHub Foundation)
+| Component | Technology | Version | Purpose | Foundation Status |
+|-----------|------------|---------|---------|------------------|
+| **Framework** | Next.js | 14+ | React-based frontend framework | ✅ Operational (MyHub) |
+| **Language** | TypeScript | 5+ | Type-safe JavaScript | ✅ Operational (MyHub) |
+| **Styling** | Tailwind CSS | 3+ | Utility-first CSS framework | ✅ Operational (MyHub) |
+| **UI Components** | Shadcn/UI | Latest | Reusable component library | 🔄 Extension (New) |
+| **State Management** | Zustand + Context | Latest | Client and server state | 🔄 Extension (New) |
+| **Data Fetching** | TanStack Query | Latest | Server state management | 🔄 Extension (New) |
+| **Authentication** | NextAuth.js | Latest | Frontend authentication | ✅ Operational (MyHub) |
+| **Forms** | React Hook Form + Zod | Latest | Form handling and validation | 🔄 Extension (New) |
+| **Testing** | Jest + RTL | Latest | Unit and component testing | ✅ Operational (MyHub) |
+| **E2E Testing** | Playwright | Latest | End-to-end testing | 🔄 Extension (New) |
+| **Internationalization** | next-intl | Latest | Multi-language support | 🔄 Extension (New) |
+
+### MyHub Foundation Components (Existing)
+| Component | File | Purpose | Rayces V3 Adaptation |
+|-----------|------|---------|---------------------|
+| **Feed.tsx** | `src/app/components/Feed.tsx` | Social media feed display | → Booking calendar interface |
+| **Post.tsx** | `src/app/components/Post.tsx` | Individual post display | → Appointment card display |
+| **IconActions.tsx** | `src/app/components/IconActions.tsx` | Social interaction buttons | → Booking action buttons |
+| **Sidebar.tsx** | `src/app/components/Sidebar.tsx` | Navigation sidebar | → Professional dashboard menu |
+| **Input.tsx** | `src/app/components/Input.tsx` | Form input component | → Booking form inputs |
+| **News.tsx** | `src/app/components/News.tsx` | News/announcements | → Booking notifications |
+| **SessionWrapper.tsx** | `src/app/components/SessionWrapper.tsx` | Authentication wrapper | → Multi-tenant session management |
+| **ServerLive.tsx** | `src/app/components/ServerLive.tsx` | Server status indicator | → Booking system status |
 
 ### Infrastructure Stack
 | Component | Technology | Version | Purpose |
@@ -337,20 +373,34 @@ erDiagram
 ```
 
 ### Current Schema Status
-**Implementation Status:** Basic models exist (User, Post, Like)  
-**Required Migrations:** Foundation models for multi-tenant architecture  
-**Sprint 1 Target:** Complete foundation models with proper tenant scoping
+**MyHub Foundation Schema** (Operational):
+- ✅ **User Model**: Complete with Google OAuth integration
+- ✅ **Post Model**: Social media posts with metadata
+- ✅ **Like Model**: User interactions with posts
+- ✅ **Database Relations**: Proper associations and indexes
+- ✅ **Authentication Tables**: Devise sessions and tokens
+
+**Rayces V3 Schema Extensions** (Required):
+- 🔄 **Organization Model**: Multi-tenant data isolation
+- 🔄 **Role Model**: RBAC for booking permissions
+- 🔄 **Professional/Client Profiles**: Extend User model
+- 🔄 **Appointment Model**: Transform Post concepts for bookings
+- 🔄 **Availability Models**: Calendar and scheduling
+- 🔄 **Credit Models**: Payment and transaction tracking
+
+**Sprint 1 Target:** Extend existing MyHub schema with multi-tenant architecture
 
 ### Database Migration Strategy
-| Migration Priority | Models | Sprint | Status |
-|-------------------|--------|--------|--------|
-| **Foundation** | Organization, User, Role | Sprint 1 | Pending |
-| **Profiles** | ProfessionalProfile, ClientProfile | Sprint 1 | Pending |
-| **Booking Core** | Appointment, AppointmentType | Sprint 2 | Pending |
-| **Availability** | AvailabilityRule, AvailabilityBlock | Sprint 2 | Pending |
-| **Credits** | CreditTransaction | Sprint 3-4 | Pending |
-| **Students** | StudentProfile, Document | Phase 2 | Future |
-| **Monetization** | Subscription, Payment | Phase 3 | Future |
+| Migration Priority | Models | Sprint | Status | Foundation Base |
+|-------------------|--------|--------|--------|-----------------|
+| **MyHub Foundation** | User, Post, Like | Operational | ✅ Complete | Existing MyHub |
+| **Multi-tenant Foundation** | Organization, Role | Sprint 1 | Pending | Extend User model |
+| **Profiles** | ProfessionalProfile, ClientProfile | Sprint 1 | Pending | Extend User model |
+| **Booking Core** | Appointment, AppointmentType | Sprint 2 | Pending | Transform Post concepts |
+| **Availability** | AvailabilityRule, AvailabilityBlock | Sprint 2 | Pending | New booking features |
+| **Credits** | CreditTransaction | Sprint 3-4 | Pending | New payment features |
+| **Students** | StudentProfile, Document | Phase 2 | Future | New education features |
+| **Monetization** | Subscription, Payment | Phase 3 | Future | New business features |
 
 ### Indexing Strategy
 ```sql

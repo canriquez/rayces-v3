@@ -3,6 +3,9 @@
 ## Project Overview
 Rayces is a multi-tenant SaaS platform for managing educational/therapeutic services with appointment booking, student lifecycle management, and AI-powered reporting. The platform serves organizations that provide therapeutic and educational services, with support for multiple user roles, credit systems, and automated workflows.
 
+# Project's Github Repository
+https://github.com/canriquez/rayces-v3
+
 ## Critical Development Rules
 
 ### 1. Changelog Management (MANDATORY)

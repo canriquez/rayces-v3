@@ -1,452 +1,493 @@
-# Rayces V3 - Jira Epic Description and Implementation Guide
-
-**Last Updated**: July 2, 2025  
-**Epic Key**: SCRUM-21  
-**Epic Name**: RaycesV3-MVP  
-**Project**: SCRUM  
-**Status**: In Progress  
-
-## 🎯 Epic Overview
-
-**Epic Summary**: Develop a comprehensive multi-tenant SaaS platform for educational and health institutions with integrated booking, student management, and AI-powered reporting capabilities.
-
-**Business Objective**: Create a scalable MVP that demonstrates end-to-end booking functionality by July 18, 2025, with full platform implementation by August 31, 2025.
-
-## 📈 Epic Progress Summary
-
-### Current Status (July 2, 2025)
-- **Overall Progress**: 15% Complete
-- **Active Sprints**: 0 (Sprint creation required)
-- **Stories Assigned**: 7 out of 44 (Carlos Anriquez)
-- **Critical Deadline**: MVP Demo in 16 days (July 18, 2025)
-- **Implementation Deadline**: Full system in 60 days (August 31, 2025)
-
-### Epic Breakdown
-- **Total Child Epics**: 9 implementation epics
-- **Total User Stories**: 44 stories
-- **Total Story Points**: ~260 points estimated
-- **Current Assignee Load**: 42 points (Carlos Anriquez)
-
-## 🚨 Critical Status Alerts
-
-### **Immediate Actions Required (July 2, 2025)**
-1. **Sprint Creation**: No active sprints detected in Jira
-2. **Team Assignment**: 37 stories remain unassigned for Sprint 2-3
-3. **MVP Demo Preparation**: 16 days remaining requires immediate sprint execution
-
-### **Risk Indicators**
-- **RED**: Single developer dependency (Carlos handling 42 points)
-- **RED**: No active sprint structure
-- **YELLOW**: Multi-tenancy implementation complexity
-- **GREEN**: Technical foundation exists
-
-## 🗂️ Child Epic Status
-
-### **Epic 1: Platform Foundation & Core Services (SCRUM-23)**
-**Priority**: Critical (MVP Blocker)  
-**Target Date**: July 7, 2025 (Sprint 1)  
-**Stories**: 5 stories (29 points)  
-**Assignee**: Carlos Anriquez (All assigned)  
-**Status**: Ready to start
-
-**Stories**:
-- SCRUM-32: Initialize Rails 7 API Application & Configure Core Gems (8 pts) ✅ Carlos
-- SCRUM-33: Implement Core Multi-Tenancy with acts_as_tenant (5 pts) 🔄 Carlos
-- SCRUM-34: Configure Internationalization (i18n) Framework (3 pts) 🔄 Carlos
-- SCRUM-35: Create Initial Migrations for Foundational Models (5 pts) 🔄 Carlos
-- SCRUM-36: Establish CI/CD Pipeline (8 pts) 🔄 Carlos
-
-### **Epic 2: User Identity & Access Management (SCRUM-24)**
-**Priority**: Critical (MVP Blocker)  
-**Target Date**: July 14, 2025 (Sprint 1-2)  
-**Stories**: 3 stories (18 points)  
-**Assignee**: Carlos Anriquez (1/3 assigned)  
-**Status**: Partial assignment
-
-**Stories**:
-- SCRUM-37: Implement Email/Password Authentication with Devise & JWT (8 pts) 🔄 Carlos
-- SCRUM-38: OAuth SSO Integration (Google/Facebook) (5 pts) 📋 Unassigned
-- SCRUM-39: Implement Tenant-Aware Role-Based Access Control (RBAC) with Pundit (5 pts) 📋 Unassigned
-
-### **Epic 3: Frontend Scaffolding & Core UI (SCRUM-25)**
-**Priority**: Critical (MVP Blocker)  
-**Target Date**: July 14, 2025 (Sprint 2)  
-**Stories**: 4 stories (23 points)  
-**Assignee**: Carlos Anriquez (1/4 assigned)  
-**Status**: Requires additional assignments
-
-**Stories**:
-- SCRUM-40: [FE] Initialize Next.js App & Configure State Management (5 pts) 🔄 Carlos
-- SCRUM-41: [FE] Implement Authentication Flow with NextAuth.js (8 pts) 📋 Unassigned
-- SCRUM-42: [FE] Build Core UI Components & Layouts (5 pts) 📋 Unassigned
-- SCRUM-43: [FE] Configure Frontend Internationalization (i18n) (5 pts) 📋 Unassigned
-
-### **Epic 4: Professional & Admin Experience (SCRUM-26)**
-**Priority**: High (MVP Feature)  
-**Target Date**: August 15, 2025 (Sprint 4-5)  
-**Stories**: 4 stories (29 points)  
-**Assignee**: All unassigned  
-**Status**: Planned for post-foundation
-
-**Stories**:
-- SCRUM-44: Professional Profile Management (8 pts) 📋 Unassigned
-- SCRUM-45: Calendar & Availability Management (8 pts) 📋 Unassigned
-- SCRUM-46: Central Admin Dashboard (8 pts) 📋 Unassigned
-- SCRUM-47: Email Notification System (5 pts) 📋 Unassigned
-
-### **Epic 5: Client Booking & Credit System (SCRUM-27)**
-**Priority**: Critical (MVP Core)  
-**Target Date**: August 31, 2025 (Sprint 3-7)  
-**Stories**: 4 stories (29 points)  
-**Assignee**: All unassigned  
-**Status**: MVP demo dependency
-
-**Stories**:
-- SCRUM-48: Client-Side Booking Flow (8 pts) 📋 Unassigned - **MVP Demo Required**
-- SCRUM-49: Client Self-Service Cancellation (8 pts) 📋 Unassigned
-- SCRUM-50: Automated Credit Issuance (8 pts) 📋 Unassigned - **MVP Demo Required**
-- SCRUM-51: Credit Management Dashboard (5 pts) 📋 Unassigned
-
-### **Epic 6: Student Lifecycle Management (SCRUM-28)**
-**Priority**: Medium (Phase 1 Feature)  
-**Target Date**: September 30, 2025  
-**Stories**: 4 stories (29 points)  
-**Assignee**: All unassigned  
-**Status**: Future phase
-
-**Stories**:
-- SCRUM-52: Student & Document Models with State Machines (8 pts) 📋 Unassigned
-- SCRUM-53: End-to-End Student Admission Workflow (8 pts) 📋 Unassigned
-- SCRUM-54: Document Upload and Versioning (8 pts) 📋 Unassigned
-- SCRUM-55: Staff & Teacher Assignment (5 pts) 📋 Unassigned
-
-### **Epic 7: Monetization & Subscription Automation (SCRUM-29)**
-**Priority**: Medium (Phase 2 Feature)  
-**Target Date**: October 31, 2025  
-**Stories**: 4 stories (29 points)  
-**Assignee**: All unassigned  
-**Status**: Future phase
-
-**Stories**:
-- SCRUM-56: Integrate Mercado Pago SDK (8 pts) 📋 Unassigned
-- SCRUM-57: Subscription Creation Flow (8 pts) 📋 Unassigned
-- SCRUM-58: Mercado Pago Webhook Handler (8 pts) 📋 Unassigned
-- SCRUM-59: Client Subscription Management UI (5 pts) 📋 Unassigned
-
-### **Epic 8: AI-Powered Reporting Workflow (SCRUM-30)**
-**Priority**: Low (Phase 3 Feature)  
-**Target Date**: December 1, 2025  
-**Stories**: 4 stories (29 points)  
-**Assignee**: All unassigned  
-**Status**: Future phase
-
-**Stories**:
-- SCRUM-60: WhatsApp Webhook for Voice Notes (8 pts) 📋 Unassigned
-- SCRUM-61: Student Identification Logic (8 pts) 📋 Unassigned
-- SCRUM-62: AI Processing with n8n (8 pts) 📋 Unassigned
-- SCRUM-63: Report Review and Approval UI (5 pts) 📋 Unassigned
-
-### **Epic 9: Executive Analytics & Reporting (SCRUM-31)**
-**Priority**: Low (Phase 3 Feature)  
-**Target Date**: December 15, 2025  
-**Stories**: 3 stories (21 points)  
-**Assignee**: All unassigned  
-**Status**: Future phase
-
-**Stories**:
-- SCRUM-64: Data Aggregation Workers for KPIs (8 pts) 📋 Unassigned
-- SCRUM-65: Analytics API Endpoints (8 pts) 📋 Unassigned
-- SCRUM-66: Director's Analytics Dashboard (5 pts) 📋 Unassigned
-
-## 🎯 MVP Demo Requirements (July 18, 2025)
-
-### **Critical Demo Stories (Must Complete)**
-**Total: 11 stories required for demo**
-
-**Foundation & Auth (Sprint 1)**:
-- SCRUM-32: Rails 7 API setup (8 pts) - Carlos
-- SCRUM-33: Multi-tenancy (5 pts) - Carlos
-- SCRUM-37: Devise/JWT auth (8 pts) - Carlos
-- SCRUM-40: Next.js setup (5 pts) - Carlos
-
-**Frontend Integration (Sprint 2)**:
-- SCRUM-41: NextAuth.js integration (8 pts) - Unassigned
-- SCRUM-42: UI components (5 pts) - Unassigned
-- SCRUM-38: OAuth SSO (5 pts) - Unassigned
-
-**Core Booking (Sprint 3)**:
-- SCRUM-48: Client booking flow (8 pts) - Unassigned
-- SCRUM-50: Appointment state machine (8 pts) - Unassigned
-- SCRUM-44: Professional profiles (partial - 4 pts) - Unassigned
-- SCRUM-47: Email notifications (5 pts) - Unassigned
-
-**Total MVP Demo Points**: ~74 points across 3 sprints
-
-### **Demo Success Criteria**
-- [ ] Multi-tenant authentication (email + Google SSO)
-- [ ] Professional can set basic availability
-- [ ] Client can search and book appointments
-- [ ] Confirmation emails working
-- [ ] Responsive UI for mobile/desktop
-- [ ] Subdomain-based tenant isolation
-
-## 🏗️ Technical Architecture
-
-### **Technology Stack**
-- **Backend**: Rails 7 API + PostgreSQL + Redis + Sidekiq
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS + Zustand
-- **Authentication**: Devise + JWT + NextAuth.js + OmniAuth
-- **Infrastructure**: Kubernetes + Docker + GitHub Actions
-- **Multi-tenancy**: acts_as_tenant with subdomain routing
-- **State Management**: AASM for appointment workflows
-
-### **Project Structure**
-```
-rayces-v3/
-├── rails-api/          # Rails 7 API backend
-├── nextjs/            # Next.js 14 frontend
-├── k8s/               # Kubernetes manifests
-└── skaffold.yaml      # Development orchestration
-```
-
-### **Current Foundation**
-- ✅ Basic Rails API with User/Post/Like models
-- ✅ Next.js app with NextAuth.js and Tailwind CSS
-- ✅ Kubernetes deployment manifests
-- ✅ Docker containerization
-- ✅ Project documentation structure
-
-## 📊 Sprint Planning (16 Days to MVP Demo)
-
-### **Sprint 1: Foundation (July 1-7, 2025)** 🔥
-**Status**: Requires immediate creation  
-**Assignee**: Carlos Anriquez  
-**Target**: 29 story points  
-**Focus**: Technical foundation and authentication
-
-**Sprint 1 Goals**:
-- Complete Rails 7 API setup with core gems
-- Implement multi-tenancy with acts_as_tenant
-- Configure internationalization framework
-- Create foundational database migrations
-- Establish CI/CD pipeline with GitHub Actions
-- Implement Devise/JWT authentication
-
-**Sprint 1 Stories**:
-- SCRUM-32: Rails 7 API (8 pts) - Carlos
-- SCRUM-33: Multi-tenancy (5 pts) - Carlos  
-- SCRUM-34: i18n framework (3 pts) - Carlos
-- SCRUM-35: Database migrations (5 pts) - Carlos
-- SCRUM-36: CI/CD pipeline (8 pts) - Carlos
-- SCRUM-37: Devise/JWT auth (8 pts) - Carlos
-
-### **Sprint 2: MVP Core (July 8-14, 2025)** 🔥
-**Status**: Team assignment required  
-**Target**: 26-30 story points  
-**Focus**: Frontend integration and OAuth
-
-**Sprint 2 Goals**:
-- Complete Next.js app with state management
-- Implement NextAuth.js authentication flow
-- Build core UI components and layouts
-- Configure OAuth SSO integration
-- Implement RBAC with Pundit
-
-**Sprint 2 Stories**:
-- SCRUM-40: Next.js setup (5 pts) - Carlos assigned
-- SCRUM-41: NextAuth.js integration (8 pts) - **Needs assignment**
-- SCRUM-42: UI components (5 pts) - **Needs assignment**
-- SCRUM-38: OAuth SSO (5 pts) - **Needs assignment**
-- SCRUM-39: Pundit RBAC (5 pts) - **Needs assignment**
-
-### **Sprint 3: Demo Preparation (July 15-18, 2025)** 🔥
-**Status**: Team assignment required  
-**Target**: 20-25 story points (3.5 day sprint)  
-**Focus**: Booking flow and demo preparation
-
-**Sprint 3 Goals**:
-- Implement client booking flow
-- Create appointment state machine
-- Build professional profile management
-- Configure email notifications
-- Prepare demo environment
-
-**Sprint 3 Stories**:
-- SCRUM-48: Client booking flow (8 pts) - **Needs assignment**
-- SCRUM-50: Appointment state machine (8 pts) - **Needs assignment**
-- SCRUM-44: Professional profiles (4 pts) - **Needs assignment**
-- SCRUM-47: Email notifications (5 pts) - **Needs assignment**
-
-## 🚨 Risk Assessment
-
-### **Critical Risks (Red)**
-1. **MVP Demo Deadline**: 16 days remaining with no active sprints
-2. **Single Developer Load**: Carlos assigned 42 story points
-3. **Sprint Structure**: No active sprints created in Jira
-4. **Team Capacity**: 37 stories unassigned for Sprint 2-3
-
-### **High Risks (Yellow)**
-1. **Multi-tenancy Complexity**: acts_as_tenant implementation
-2. **Authentication Integration**: NextAuth.js + Rails JWT sync
-3. **Frontend Development**: Parallel development coordination
-4. **Demo Scope**: Potential scope creep beyond MVP
-
-### **Mitigation Strategies**
-- **Immediate sprint creation** in Jira for tracking
-- **Team expansion** consideration for Sprint 2-3
-- **Scope management** with strict MVP focus
-- **Parallel development** planning for frontend/backend
-- **Technical spike** allocation for multi-tenancy research
-
-## 🎯 Definition of Done
-
-### **Story Level**
-- [ ] Acceptance criteria met
-- [ ] Unit tests written (90%+ coverage)
-- [ ] Integration tests passing
-- [ ] Code review completed
-- [ ] Documentation updated
-- [ ] No security vulnerabilities
-- [ ] Performance requirements met
-
-### **Epic Level**
-- [ ] All child stories completed
-- [ ] End-to-end testing passed
-- [ ] User acceptance testing completed
-- [ ] Documentation complete
-- [ ] Production deployment ready
-- [ ] Security audit passed
-
-### **MVP Demo Level**
-- [ ] End-to-end booking flow working
-- [ ] Multi-tenant authentication functional
-- [ ] Professional availability management
-- [ ] Client booking interface operational
-- [ ] Email notifications working
-- [ ] Responsive UI demonstrable
-- [ ] Performance acceptable for demo
-
-## 🔗 Key Resources
-
-### **Project Management**
-- **Confluence Home**: [Project Documentation](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/65964)
-- **Epic Tracking**: [Story Progress](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66001)
-- **Milestone Timeline**: [Critical Dates](https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66119)
-
-### **Development Resources**
-- **GitHub Repository**: rayces-v3
-- **Jira Board**: [SCRUM Project](https://canriquez.atlassian.net/jira/software/projects/SCRUM)
-- **Rails Documentation**: [Rails 7 Guides](https://guides.rubyonrails.org/v7.0/)
-- **Next.js Documentation**: [Next.js 14](https://nextjs.org/docs)
-
-### **Technical References**
-- **Multi-tenancy**: [acts_as_tenant](https://github.com/ErwinM/acts_as_tenant)
-- **Authentication**: [Devise](https://github.com/heartcombo/devise)
-- **Frontend Auth**: [NextAuth.js](https://next-auth.js.org/)
-- **State Management**: [AASM](https://github.com/aasm/aasm)
-
-## 📅 Immediate Actions (July 2-7, 2025)
-
-### **Day 1 (July 2)**
-- [ ] Create Sprint 1 in Jira (July 1-7, 2025)
-- [ ] Confirm Carlos's Sprint 1 story assignments
-- [ ] Begin multi-tenancy research and implementation
-- [ ] Start CI/CD pipeline setup
-
-### **Day 2-3 (July 3-4)**
-- [ ] Complete Rails 7 API setup (SCRUM-32)
-- [ ] Implement acts_as_tenant configuration (SCRUM-33)
-- [ ] Configure internationalization framework (SCRUM-34)
-- [ ] Plan Sprint 2 team assignments
-
-### **Day 4-5 (July 5-6)**
-- [ ] Complete database migrations (SCRUM-35)
-- [ ] Implement Devise/JWT authentication (SCRUM-37)
-- [ ] Finalize CI/CD pipeline (SCRUM-36)
-- [ ] Assign Sprint 2 stories to team members
-
-### **Day 6-7 (July 6-7)**
-- [ ] Sprint 1 review and retrospective
-- [ ] Create Sprint 2 in Jira (July 8-14, 2025)
-- [ ] Prepare Sprint 2 development environment
-- [ ] Begin frontend development planning
-
-## 📈 Success Metrics
-
-### **Sprint 1 Success**
-- [ ] 29 story points completed
-- [ ] Multi-tenancy foundation working
-- [ ] Authentication system operational
-- [ ] CI/CD pipeline functional
-- [ ] Database migrations complete
-- [ ] Sprint 2 team assignments confirmed
-
-### **MVP Demo Success**
-- [ ] Complete booking flow demonstration
-- [ ] Multi-tenant authentication working
-- [ ] Professional and client interfaces operational
-- [ ] Email notifications functional
-- [ ] Responsive UI presentation
-- [ ] Stakeholder approval for full implementation
-
-### **Epic Success**
-- [ ] 44 stories completed across 9 epics
-- [ ] Production-ready booking system
-- [ ] Multi-tenant SaaS platform operational
-- [ ] All success criteria met
-- [ ] User acceptance testing passed
-- [ ] December 31, 2025 full deployment target
+# Rayces V3 MVP - Jira Epic Descriptions
+
+**Last Updated**: July 8, 2025  
+**Sprint Status**: Sprint 1 In Progress (SCRUM-32 Active)  
+**Confluence Reference**: https://canriquez.atlassian.net/wiki/spaces/SCRUM/pages/66001  
+
+## Master Epic: RaycesV3-MVP (SCRUM-21)
+
+### Epic Summary
+Develop a comprehensive multi-tenant booking platform for educational and health institutions, extending the existing MyHub social media foundation into a sophisticated appointment management system.
+
+### Current Status
+- **Overall Progress**: 20% Complete (SCRUM-32 in progress)
+- **Active Sprint**: Sprint 1 (July 1-8, 2025)
+- **MVP Demo**: 10 days remaining (July 18, 2025)
+- **Full Implementation**: 54 days remaining (August 31, 2025)
+
+### MyHub Foundation Extension Strategy
+**Building on Operational Components**:
+- ✅ **Rails 7 API**: User, Post, Like models with PostgreSQL
+- ✅ **Google OAuth**: NextAuth.js integration
+- ✅ **Next.js Frontend**: TypeScript, Tailwind CSS
+- ✅ **Infrastructure**: Docker + Kubernetes manifests
+- ✅ **Real-time**: ActionCable WebSocket communication
+
+**Extension Approach**:
+- **User System** → Multi-tenant users with organization_id
+- **Post System** → Appointment booking with AASM states
+- **Like System** → Booking confirmations and notifications
+- **Feed Interface** → Professional availability calendar
+
+### Epic Scope
+- **Total Stories**: 44 across 10 epics
+- **Assigned Stories**: 7 stories (42 points) to Carlos Anriquez
+- **Unassigned Stories**: 37 stories requiring team assignment
+- **Critical Path**: Sprint 1 completion by July 8
 
 ---
 
-## 📝 Epic Description for Jira
+## Epic 1: Platform Foundation (SCRUM-23)
 
-**Epic Name**: RaycesV3-MVP  
-**Epic Summary**: Develop a comprehensive multi-tenant SaaS platform for educational and health institutions with integrated booking, student management, and AI-powered reporting capabilities.
+### Epic Description
+Establish the core platform infrastructure by extending the MyHub foundation with multi-tenancy, internationalization, and CI/CD capabilities required for a scalable booking platform.
 
-**Description**:
-This epic encompasses the complete development of Rayces V3, a multi-tenant SaaS platform designed for educational and health institutions. The platform will provide comprehensive booking management, student lifecycle tracking, integrated payment processing, and AI-powered reporting capabilities.
+### Current Status
+- **Progress**: 20% Complete (1/5 stories in progress)
+- **Sprint**: Sprint 1 (July 1-8, 2025)
+- **Assigned**: Carlos Anriquez (5 stories, 29 points)
+- **Priority**: 🔥 Critical (MVP Blocker)
 
-**Key Milestones**:
-- MVP Demo: July 18, 2025 (16 days remaining)
-- Full Booking Implementation: August 31, 2025 (60 days remaining)
-- Complete Platform: December 31, 2025
+### Stories in Epic
 
-**Current Status**: 15% Complete (7/44 stories assigned to Carlos Anriquez)
+#### 🔄 SCRUM-32: Initialize Rails 7 API Application & Configure Core Gems (8 pts)
+- **Status**: In Progress
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Extend the existing MyHub Rails 7 API with essential gems for multi-tenancy, state management, and booking functionality
+- **Acceptance Criteria**: Rails API operational with acts_as_tenant, AASM, Pundit, and other core gems configured
+
+#### 📋 SCRUM-33: Implement Core Multi-Tenancy with acts_as_tenant (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Implement organization-based multi-tenancy using acts_as_tenant gem
+- **Acceptance Criteria**: All models tenant-scoped, subdomain routing, data isolation working
+
+#### 📋 SCRUM-34: Configure Internationalization (i18n) Framework (3 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Set up i18n framework with es-AR as primary locale and English support
+- **Acceptance Criteria**: i18n configured, locale files created, locale switching functional
+
+#### 📋 SCRUM-35: Create Initial Migrations for Foundational Models (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Create database migrations for organizations, roles, professional profiles, and appointments
+- **Acceptance Criteria**: Database schema supports multi-tenancy and booking functionality
+
+#### 📋 SCRUM-36: Establish CI/CD Pipeline (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Create GitHub Actions workflow for automated testing and deployment
+- **Acceptance Criteria**: CI/CD pipeline runs tests, builds containers, deploys to staging
+
+### Epic Dependencies
+- **Blocks**: All other epics depend on platform foundation
+- **Critical**: Sprint 1 completion required for MVP timeline
+- **Risk**: Multi-tenancy complexity may require extra time
+
+---
+
+## Epic 2: User Identity & Access (SCRUM-24)
+
+### Epic Description
+Implement comprehensive authentication and authorization system extending MyHub's Google OAuth with multi-tenant support and role-based access control.
+
+### Current Status
+- **Progress**: 0% Complete (1/3 stories assigned)
+- **Sprint**: Sprint 1-2
+- **Assigned**: Carlos Anriquez (1 story, 8 points)
+- **Priority**: 🔥 Critical (MVP Blocker)
+
+### Stories in Epic
+
+#### 📋 SCRUM-37: Implement Email/Password Authentication with Devise & JWT (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 1
+- **Assignee**: Carlos Anriquez
+- **Description**: Enhance existing authentication with Devise and JWT for API access
+- **Acceptance Criteria**: Email/password auth working, JWT tokens generated, API authentication functional
+
+#### 📋 SCRUM-38: Implement OAuth SSO Integration (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Unassigned
+- **Description**: Extend existing Google OAuth with Facebook and tenant-aware SSO
+- **Acceptance Criteria**: Multiple OAuth providers, tenant context in tokens, SSO flow working
+
+#### 📋 SCRUM-39: Implement Tenant-Aware RBAC with Pundit (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Unassigned
+- **Description**: Create role-based access control with Pundit policies for multi-tenant environment
+- **Acceptance Criteria**: 4 roles implemented, tenant-scoped permissions, policy enforcement working
+
+---
+
+## Epic 3: Frontend Scaffolding (SCRUM-25)
+
+### Epic Description
+Develop the frontend architecture extending MyHub's Next.js foundation with booking-specific components, state management, and multi-tenant authentication flow.
+
+### Current Status
+- **Progress**: 0% Complete (1/4 stories assigned)
+- **Sprint**: Sprint 2
+- **Assigned**: Carlos Anriquez (1 story, 5 points)
+- **Priority**: 🔥 Critical (MVP Blocker)
+
+### Stories in Epic
+
+#### 📋 SCRUM-40: [FE] Initialize Next.js App & Configure State Management (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Carlos Anriquez
+- **Description**: Extend existing Next.js app with Zustand state management for booking functionality
+- **Acceptance Criteria**: State management configured, tenant context handling, booking state structure
+
+#### 📋 SCRUM-41: [FE] Implement Authentication Flow with NextAuth.js (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Unassigned
+- **Description**: Enhance existing NextAuth.js with multi-tenant support and role-based routing
+- **Acceptance Criteria**: Multi-tenant auth flow, role-based redirects, session management working
+
+#### 📋 SCRUM-42: [FE] Create Core UI Components & Layouts (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Unassigned
+- **Description**: Develop booking-specific UI components extending MyHub's component structure
+- **Acceptance Criteria**: Booking wizard, calendar views, appointment cards, responsive layouts
+
+#### 📋 SCRUM-43: [FE] Implement Frontend Internationalization (5 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 2
+- **Assignee**: Unassigned
+- **Description**: Configure frontend i18n with es-AR and English support
+- **Acceptance Criteria**: Language switching, translated UI, locale persistence working
+
+---
+
+## Epic 4: Professional & Admin Experience (SCRUM-26)
+
+### Epic Description
+Create professional-facing features for availability management, appointment handling, and admin capabilities for system oversight.
+
+### Current Status
+- **Progress**: 0% Complete (4/4 stories unassigned)
+- **Sprint**: Sprint 3+ (Post-MVP)
+- **Assigned**: None
+- **Priority**: ⚠️ High (August 31 deadline)
+
+### Stories in Epic
+
+#### 📋 SCRUM-44: Professional Profile Management (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 3 (partial - 4 pts for demo)
+- **Assignee**: Unassigned
+- **Description**: Professional profile creation, specialization, and availability setup
+- **Acceptance Criteria**: Profile forms, availability calendar, professional settings working
+
+#### 📋 SCRUM-45: Professional Availability Management (8 pts)
+- **Status**: To Do
+- **Sprint**: August
+- **Assignee**: Unassigned
+- **Description**: Calendar interface for setting and managing availability
+- **Acceptance Criteria**: Calendar UI, time slot management, availability sync working
+
+#### 📋 SCRUM-46: Professional Appointment Dashboard (8 pts)
+- **Status**: To Do
+- **Sprint**: August
+- **Assignee**: Unassigned
+- **Description**: Dashboard for managing appointments, client interactions, and scheduling
+- **Acceptance Criteria**: Appointment list, client details, scheduling tools working
+
+#### 📋 SCRUM-47: Admin Dashboard & User Management (8 pts)
+- **Status**: To Do
+- **Sprint**: August
+- **Assignee**: Unassigned
+- **Description**: Admin interface for user management, system oversight, and configuration
+- **Acceptance Criteria**: User management, system settings, admin analytics working
+
+---
+
+## Epic 5: Client Booking & Credit System (SCRUM-27)
+
+### Epic Description
+Implement the client-facing booking experience with appointment scheduling, credit management, and cancellation policies.
+
+### Current Status
+- **Progress**: 0% Complete (2/4 stories for MVP demo)
+- **Sprint**: Sprint 3 (MVP Demo)
+- **Assigned**: None
+- **Priority**: 🔥 Critical (MVP Demo)
+
+### Stories in Epic
+
+#### 📋 SCRUM-48: Client-Side Booking Flow (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 3
+- **Assignee**: Unassigned
+- **Description**: Complete booking wizard for clients to schedule appointments
+- **Acceptance Criteria**: Booking wizard, professional selection, time slot booking, confirmation working
+
+#### 📋 SCRUM-49: Appointment Cancellation & Rescheduling (8 pts)
+- **Status**: To Do
+- **Sprint**: August
+- **Assignee**: Unassigned
+- **Description**: Cancellation interface with 24-hour policy and rescheduling options
+- **Acceptance Criteria**: Cancellation flow, 24h policy enforcement, rescheduling working
+
+#### 📋 SCRUM-50: Automated Credit Issuance on Cancellation (8 pts)
+- **Status**: To Do
+- **Sprint**: Sprint 3
+- **Assignee**: Unassigned
+- **Description**: Credit system for cancellations and refunds
+- **Acceptance Criteria**: Credit calculation, automatic issuance, credit tracking working
+
+#### 📋 SCRUM-51: Client Appointment History & Credits (8 pts)
+- **Status**: To Do
+- **Sprint**: August
+- **Assignee**: Unassigned
+- **Description**: Client dashboard for appointment history and credit management
+- **Acceptance Criteria**: Appointment history, credit balance, usage tracking working
+
+---
+
+## Epic 6: Student Lifecycle Management (SCRUM-28)
+
+### Epic Description
+Comprehensive student management system for educational institutions with enrollment, document management, and progress tracking.
+
+### Current Status
+- **Progress**: 0% Complete (Phase 2 - September 2025)
+- **Sprint**: Future (Sprint 9-10)
+- **Assigned**: None
+- **Priority**: ⏳ Future Implementation
+
+### Stories in Epic
+
+#### 📋 SCRUM-52: Student Profile & Enrollment Management (8 pts)
+- **Status**: To Do
+- **Sprint**: September
+- **Assignee**: Unassigned
+- **Description**: Student profile creation, enrollment workflow, and academic information management
+- **Acceptance Criteria**: Student profiles, enrollment process, academic data working
+
+#### 📋 SCRUM-53: Document Upload & Management System (8 pts)
+- **Status**: To Do
+- **Sprint**: September
+- **Assignee**: Unassigned
+- **Description**: Document upload system for student records and academic documents
+- **Acceptance Criteria**: File upload, document categorization, version control working
+
+#### 📋 SCRUM-54: Student Progress Tracking & Reporting (8 pts)
+- **Status**: To Do
+- **Sprint**: September
+- **Assignee**: Unassigned
+- **Description**: Academic progress tracking and reporting system
+- **Acceptance Criteria**: Progress tracking, report generation, analytics working
+
+#### 📋 SCRUM-55: Staff Assignment & Student Management (8 pts)
+- **Status**: To Do
+- **Sprint**: September
+- **Assignee**: Unassigned
+- **Description**: Staff assignment system for student management and academic oversight
+- **Acceptance Criteria**: Staff assignment, student oversight, permission management working
+
+---
+
+## Epic 7: Monetization & Payment Integration (SCRUM-29)
+
+### Epic Description
+Mercado Pago integration for payment processing, subscription management, and revenue tracking.
+
+### Current Status
+- **Progress**: 0% Complete (Phase 3 - October 2025)
+- **Sprint**: Future (Sprint 13-15)
+- **Assigned**: None
+- **Priority**: ⏳ Future Implementation
+
+### Stories in Epic
+
+#### 📋 SCRUM-56: Mercado Pago Integration (8 pts)
+- **Status**: To Do
+- **Sprint**: October
+- **Assignee**: Unassigned
+- **Description**: Payment gateway integration for appointment payments
+- **Acceptance Criteria**: Payment processing, webhook handling, transaction management working
+
+#### 📋 SCRUM-57: Subscription Management System (8 pts)
+- **Status**: To Do
+- **Sprint**: October
+- **Assignee**: Unassigned
+- **Description**: Subscription plans for organizations and recurring billing
+- **Acceptance Criteria**: Subscription plans, billing cycles, payment management working
+
+#### 📋 SCRUM-58: Revenue Tracking & Financial Reporting (8 pts)
+- **Status**: To Do
+- **Sprint**: October
+- **Assignee**: Unassigned
+- **Description**: Financial reporting and revenue analytics
+- **Acceptance Criteria**: Revenue tracking, financial reports, analytics dashboard working
+
+#### 📋 SCRUM-59: Multi-Currency & Localization (8 pts)
+- **Status**: To Do
+- **Sprint**: October
+- **Assignee**: Unassigned
+- **Description**: Multi-currency support and regional payment methods
+- **Acceptance Criteria**: Currency conversion, regional payments, localized billing working
+
+---
+
+## Epic 8: AI-Powered Reporting & Voice Notes (SCRUM-30)
+
+### Epic Description
+WhatsApp integration with voice note processing and AI-powered report generation using n8n workflows.
+
+### Current Status
+- **Progress**: 0% Complete (Phase 4 - November 2025)
+- **Sprint**: Future (Sprint 16-19)
+- **Assigned**: None
+- **Priority**: ⏳ Future Implementation
+
+### Stories in Epic
+
+#### 📋 SCRUM-60: WhatsApp Business API Integration (8 pts)
+- **Status**: To Do
+- **Sprint**: November
+- **Assignee**: Unassigned
+- **Description**: WhatsApp integration for voice note collection
+- **Acceptance Criteria**: WhatsApp API, voice note handling, message processing working
+
+#### 📋 SCRUM-61: Voice Note Processing & Transcription (8 pts)
+- **Status**: To Do
+- **Sprint**: November
+- **Assignee**: Unassigned
+- **Description**: Voice note transcription and processing system
+- **Acceptance Criteria**: Voice transcription, audio processing, text analysis working
+
+#### 📋 SCRUM-62: AI Report Generation with n8n (8 pts)
+- **Status**: To Do
+- **Sprint**: November
+- **Assignee**: Unassigned
+- **Description**: Automated report generation using n8n workflows
+- **Acceptance Criteria**: n8n integration, report automation, AI processing working
+
+#### 📋 SCRUM-63: Professional Review & Report Management (8 pts)
+- **Status**: To Do
+- **Sprint**: November
+- **Assignee**: Unassigned
+- **Description**: Professional interface for reviewing and managing AI-generated reports
+- **Acceptance Criteria**: Report review UI, edit capabilities, approval workflow working
+
+---
+
+## Epic 9: Executive Analytics & KPIs (SCRUM-31)
+
+### Epic Description
+Comprehensive analytics dashboard for executive decision-making with KPI tracking and performance metrics.
+
+### Current Status
+- **Progress**: 0% Complete (Phase 4 - December 2025)
+- **Sprint**: Future (Sprint 20-21)
+- **Assigned**: None
+- **Priority**: ⏳ Future Implementation
+
+### Stories in Epic
+
+#### 📋 SCRUM-64: Executive Dashboard & KPI Tracking (8 pts)
+- **Status**: To Do
+- **Sprint**: December
+- **Assignee**: Unassigned
+- **Description**: Executive dashboard with key performance indicators
+- **Acceptance Criteria**: KPI dashboard, performance metrics, executive reporting working
+
+#### 📋 SCRUM-65: Advanced Analytics & Data Visualization (8 pts)
+- **Status**: To Do
+- **Sprint**: December
+- **Assignee**: Unassigned
+- **Description**: Advanced analytics with interactive data visualization
+- **Acceptance Criteria**: Data visualization, interactive charts, advanced analytics working
+
+#### 📋 SCRUM-66: Performance Benchmarking & Insights (8 pts)
+- **Status**: To Do
+- **Sprint**: December
+- **Assignee**: Unassigned
+- **Description**: Performance benchmarking and actionable insights
+- **Acceptance Criteria**: Benchmarking system, insights generation, performance analysis working
+
+---
+
+## Current Sprint Status & Immediate Actions
+
+### Sprint 1 - Foundation (July 1-8, 2025) - IN PROGRESS
+**Progress**: 1/6 stories in progress, 5 stories remaining
+**Critical**: Sprint completion required by July 8 for MVP timeline
 
 **Immediate Actions Required**:
-- Create Sprint 1 (July 1-7, 2025)
-- Assign remaining stories for Sprint 2-3
-- Begin foundation development
+1. **Complete SCRUM-32**: Finish Rails 7 API setup with core gems
+2. **Execute Sprint 1 backlog**: Complete remaining 5 stories by EOD July 8
+3. **Prepare Sprint 2**: Create Sprint 2 (July 9-15) with team assignments
+4. **Assign Sprint 2 stories**: 28 story points requiring immediate assignment
 
-**Epic Goals**:
-1. Deliver a working MVP demonstration by July 18, 2025
-2. Complete full booking implementation by August 31, 2025
-3. Implement student management features by September 30, 2025
-4. Add monetization capabilities by October 31, 2025
-5. Deploy complete platform with AI features by December 31, 2025
+### Sprint 2 - MVP Core (July 9-15, 2025) - NEEDS PLANNING
+**Target**: 28 story points for MVP demo preparation
+**Status**: Sprint creation and team assignment required
 
-**Success Criteria**:
-- End-to-end booking flow operational
-- Multi-tenant authentication and RBAC working
-- Professional and client interfaces complete
-- Student lifecycle management functional
-- Payment processing integrated
-- AI-powered reporting operational
-- Executive analytics dashboard complete
+**Unassigned Stories**:
+- SCRUM-38: OAuth SSO Integration (5 pts)
+- SCRUM-39: Tenant-Aware RBAC (5 pts)
+- SCRUM-41: [FE] Authentication Flow (8 pts)
+- SCRUM-42: [FE] Core UI Components (5 pts)
+- SCRUM-43: [FE] Frontend i18n (5 pts)
 
-**Technical Stack**:
-- Backend: Rails 7 API + PostgreSQL + Redis + Sidekiq
-- Frontend: Next.js 14 + TypeScript + Tailwind CSS
-- Infrastructure: Kubernetes + Docker + GitHub Actions
-- Authentication: Devise + JWT + NextAuth.js + OAuth
-- Multi-tenancy: acts_as_tenant with subdomain routing
+### Sprint 3 - MVP Demo (July 16-18, 2025) - CRITICAL
+**Target**: 20 story points for demo functionality
+**Status**: Sprint creation and team assignment required
 
-**Risk Level**: HIGH - MVP demo deadline in 16 days with no active sprints
+**Demo Stories**:
+- SCRUM-48: Client Booking Flow (8 pts)
+- SCRUM-50: Credit System (8 pts)
+- SCRUM-44: Professional Profiles (4 pts - demo portion)
 
 ---
 
-*Last Updated: July 2, 2025*  
-*Next Review: July 7, 2025 (Sprint 1 completion)*  
-*Document Owner: Carlos Anriquez*
+## Success Metrics & Definitions of Done
+
+### Sprint 1 Success Criteria (July 8, 2025)
+- [ ] Rails 7 API operational with core gems
+- [ ] Multi-tenancy with acts_as_tenant functional
+- [ ] i18n framework configured (es-AR, English)
+- [ ] Database migrations completed
+- [ ] CI/CD pipeline with GitHub Actions
+- [ ] Devise/JWT authentication working
+
+### MVP Demo Success Criteria (July 18, 2025)
+- [ ] Complete booking flow demonstration
+- [ ] Multi-tenant authentication working
+- [ ] Professional availability setup
+- [ ] Client booking interface
+- [ ] Email notifications operational
+- [ ] Responsive UI for presentation
+
+### Full Implementation Success Criteria (August 31, 2025)
+- [ ] Complete RBAC with 4 roles
+- [ ] Full appointment lifecycle with AASM
+- [ ] 24-hour cancellation policy
+- [ ] Professional calendar management
+- [ ] Admin dashboard operational
+- [ ] Multi-language support (es-AR, en)
+- [ ] 90%+ test coverage
+- [ ] Production deployment ready
+
+---
+
+**Last Updated**: July 8, 2025  
+**Next Review**: Sprint 1 completion (July 8, 2025)  
+**Status**: Active development - Foundation phase with SCRUM-32 in progress  
+**Critical Path**: Sprint 1 completion → Sprint 2 assignment → Sprint 3 demo prep
 
