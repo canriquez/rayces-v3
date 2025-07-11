@@ -19,7 +19,7 @@ The file should have the following structure sections
 ""With all the documentation collected, you should summarise the feature description including all its requirements. The include on this sections a summary auto explanatory list of al the tasks that are required for this issue to be solved""
 
 ## Examples
-""You will search the web for valid examples and generate all example code snippets that you see required for further context inside the folder `issues/{{$ARGUMENTS}}/`. 
+""You will search the web for valid examples and generate all example code snippets that you see required for further context inside the folder `issues/{{$ARGUMENTS}}/examples/`. 
 
 Considering that the issue has the references called `{{$ARGUMENTS}}`, you will search the internet and use our documentation mcp `context7` for references and store the top 5 code snippet examples relative to the issue we need to solve and generate the files and locate them in the right places. Then you will include te absolut reference inside the section examples of the document
 
@@ -27,15 +27,15 @@ Considering that the issue has the references called `{{$ARGUMENTS}}`, you will 
 The files should be stored inside the project folder like this example below:
 
 ```
-issues/[SCRUM-40]/multi-tenant-example.rb
-issues/[SCRUM-40]/ui-module.ts
+issues/[SCRUM-40]/examples/multi-tenant-example.rb
+issues/[SCRUM-40]/examples/ui-module.ts
 ```
 
 then later inside the ## Examples section of the document you should store the references like this: 
 ""
 
-- `issues/{{$ARGUMENTS}}/multi-tenant-example.rb` use this snippet generate the multi tenant code
-- `issues/{{$ARGUMENTS}}/ui-module.ts` read through all this example to understand the best practices we should use inside the final solution for the ui-module.
+- `issues/{{$ARGUMENTS}}/examples/multi-tenant-example.rb` use this snippet generate the multi tenant code
+- `issues/{{$ARGUMENTS}}/examples/ui-module.ts` read through all this example to understand the best practices we should use inside the final solution for the ui-module.
 
 
 Do not copy any of this examples directly, it is for a different project entirely. But use this as inspiration for best practices.
