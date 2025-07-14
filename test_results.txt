@@ -1,0 +1,43 @@
+
+An error occurred while loading ./-.
+Failure/Error: __send__(method, file)
+
+LoadError:
+  cannot load such file -- /var/www/rails-api/-
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/configuration.rb:2138:in `load'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/configuration.rb:2138:in `load_file_handling_errors'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/configuration.rb:1638:in `block in load_spec_files'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/configuration.rb:1636:in `each'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/configuration.rb:1636:in `load_spec_files'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/runner.rb:102:in `setup'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/runner.rb:86:in `run'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/runner.rb:71:in `run'
+# /usr/local/bundle/gems/rspec-core-3.13.0/lib/rspec/core/runner.rb:45:in `invoke'
+# /usr/local/bundle/gems/rspec-core-3.13.0/exe/rspec:4:in `<top (required)>'
+# /usr/local/bundle/bin/rspec:25:in `load'
+# /usr/local/bundle/bin/rspec:25:in `<top (required)>'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli/exec.rb:58:in `load'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli/exec.rb:58:in `kernel_load'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli/exec.rb:23:in `run'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli.rb:483:in `exec'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/vendor/thor/lib/thor/command.rb:27:in `run'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/vendor/thor/lib/thor/invocation.rb:127:in `invoke_command'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/vendor/thor/lib/thor.rb:392:in `dispatch'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli.rb:31:in `dispatch'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/vendor/thor/lib/thor/base.rb:485:in `start'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/cli.rb:25:in `start'
+# /usr/local/bundle/gems/bundler-2.3.11/exe/bundle:48:in `block in <top (required)>'
+# /usr/local/bundle/gems/bundler-2.3.11/lib/bundler/friendly_errors.rb:103:in `with_friendly_errors'
+# /usr/local/bundle/gems/bundler-2.3.11/exe/bundle:36:in `<top (required)>'
+# /usr/local/bundle/bin/bundle:25:in `load'
+# /usr/local/bundle/bin/bundle:25:in `<main>'
+# 
+#   Showing full backtrace because every line was filtered out.
+#   See docs for RSpec::Configuration#backtrace_exclusion_patterns and
+#   RSpec::Configuration#backtrace_inclusion_patterns for more information.
+No examples found.
+
+
+Finished in 0.00002 seconds (files took 0.11003 seconds to load)
+0 examples, 0 failures, 1 error occurred outside of examples
+

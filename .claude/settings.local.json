@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "mcp__github__list_issues",
-      "mcp__github__get_issue"
+      "mcp__github__get_issue",
+      "Bash(find:*)"
     ],
     "deny": []
   }

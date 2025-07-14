@@ -1,0 +1,283 @@
+require 'rails_helper'
+
+RSpec.describe EmailNotificationWorker, type: :worker do
+  let(:organization) { create(:organization) }
+  let(:professional) { create(:professional, organization: organization) }
+  let(:parent) { create(:user, :parent, organization: organization) }
+  let(:appointment) { create(:appointment, :confirmed, professional: professional, client: parent, organization: organization) }
+
+  describe '#perform' do
+    context 'appointment_confirmed notification' do
+      it 'sends confirmation email to client' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_confirmed).with(appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_confirmed', appointment.id)
+        end
+      end
+
+      it 'logs the email sending' do
+        allow(AppointmentMailer).to receive_message_chain(:appointment_confirmed, :deliver_now)
+        
+        expect(Rails.logger).to receive(:info).with(
+          "Sent appointment_confirmed email for appointment #{appointment.id}"
+        )
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_confirmed', appointment.id)
+        end
+      end
+    end
+
+    context 'appointment_cancelled notification' do
+      let(:cancelled_appointment) { create(:appointment, :cancelled, professional: professional, client: parent, organization: organization) }
+
+      it 'sends cancellation email to client' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_cancelled).with(cancelled_appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_cancelled', cancelled_appointment.id)
+        end
+      end
+
+      it 'sends cancellation email to professional' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_cancelled_professional).with(cancelled_appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_cancelled', cancelled_appointment.id)
+        end
+      end
+    end
+
+    context 'appointment_completed notification' do
+      let(:executed_appointment) { create(:appointment, :executed, professional: professional, client: parent, organization: organization) }
+
+      it 'sends completion email to client' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_completed).with(executed_appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_completed', executed_appointment.id)
+        end
+      end
+    end
+
+    context 'appointment_auto_cancelled notification' do
+      let(:auto_cancelled_appointment) { create(:appointment, :cancelled, professional: professional, client: parent, organization: organization) }
+
+      it 'sends auto-cancellation email to client' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_auto_cancelled).with(auto_cancelled_appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_auto_cancelled', auto_cancelled_appointment.id)
+        end
+      end
+
+      it 'sends auto-cancellation notification to professional' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:appointment_auto_cancelled_professional).with(auto_cancelled_appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_auto_cancelled', auto_cancelled_appointment.id)
+        end
+      end
+    end
+
+    context 'reminder_24h notification' do
+      it 'sends 24-hour reminder to client' do
+        mailer_double = double('mailer')
+        expect(AppointmentMailer).to receive(:reminder_24h).with(appointment).and_return(mailer_double)
+        expect(mailer_double).to receive(:deliver_now)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('reminder_24h', appointment.id)
+        end
+      end
+    end
+
+    context 'with invalid notification type' do
+      it 'logs error for unknown notification type' do
+        expect(Rails.logger).to receive(:error).with(
+          "Unknown notification type: invalid_type for appointment #{appointment.id}"
+        )
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('invalid_type', appointment.id)
+        end
+      end
+
+      it 'does not raise an error' do
+        expect {
+          ActsAsTenant.with_tenant(organization) do
+            EmailNotificationWorker.new.perform('invalid_type', appointment.id)
+          end
+        }.not_to raise_error
+      end
+    end
+
+    context 'when appointment does not exist' do
+      it 'logs warning for missing appointment' do
+        expect(Rails.logger).to receive(:warn).with(
+          "Appointment with id 999999 not found for email notification"
+        )
+        
+        expect {
+          EmailNotificationWorker.new.perform('appointment_confirmed', 999999)
+        }.not_to raise_error
+      end
+    end
+
+    context 'when appointment is from different organization' do
+      let(:other_org) { create(:organization, subdomain: 'other') }
+      let(:other_appointment) { create(:appointment, organization: other_org) }
+
+      it 'does not send email for appointment from different tenant' do
+        expect(AppointmentMailer).not_to receive(:appointment_confirmed)
+        
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_confirmed', other_appointment.id)
+        end
+      end
+    end
+  end
+
+  describe 'error handling' do
+    before do
+      allow(AppointmentMailer).to receive(:appointment_confirmed).and_raise(Net::SMTPServerBusy.new('Server busy'))
+    end
+
+    it 'logs email delivery errors' do
+      expect(Rails.logger).to receive(:error).with(
+        /Failed to send appointment_confirmed email for appointment #{appointment.id}/
+      )
+      
+      expect {
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_confirmed', appointment.id)
+        end
+      }.not_to raise_error
+    end
+
+    it 'allows Sidekiq to retry on email errors' do
+      expect {
+        ActsAsTenant.with_tenant(organization) do
+          EmailNotificationWorker.new.perform('appointment_confirmed', appointment.id)
+        end
+      }.not_to raise_error
+    end
+  end
+
+  describe 'sidekiq configuration' do
+    it 'includes ApplicationWorker module' do
+      expect(EmailNotificationWorker.ancestors).to include(ApplicationWorker)
+    end
+
+    it 'has correct queue configuration' do
+      expect(EmailNotificationWorker.sidekiq_options['queue']).to eq('default')
+    end
+
+    it 'has correct retry configuration' do
+      expect(EmailNotificationWorker.sidekiq_options['retry']).to eq(5)
+    end
+  end
+
+  describe 'tenant context preservation' do
+    it 'maintains tenant context during job execution' do
+      allow(AppointmentMailer).to receive_message_chain(:appointment_confirmed, :deliver_now)
+      
+      ActsAsTenant.with_tenant(organization) do
+        worker = EmailNotificationWorker.new
+        worker.perform('appointment_confirmed', appointment.id)
+        
+        # Verify the appointment was found (meaning tenant context was correct)
+        expect(AppointmentMailer).to have_received(:appointment_confirmed).with(appointment)
+      end
+    end
+
+    it 'sets tenant context from appointment organization' do
+      allow(AppointmentMailer).to receive_message_chain(:appointment_confirmed, :deliver_now)
+      
+      worker = EmailNotificationWorker.new
+      expect(ActsAsTenant).to receive(:with_tenant).with(appointment.organization)
+      worker.perform('appointment_confirmed', appointment.id)
+    end
+  end
+
+  describe 'notification triggers' do
+    it 'is triggered when appointment is confirmed' do
+      draft_appointment = create(:appointment, :draft, professional: professional, client: parent, organization: organization)
+      
+      ActsAsTenant.with_tenant(organization) do
+        draft_appointment.pre_confirm!
+        
+        expect(EmailNotificationWorker).to receive(:perform_async).with(
+          'appointment_confirmed', draft_appointment.id
+        )
+        
+        draft_appointment.confirm!
+      end
+    end
+
+    it 'is triggered when appointment is cancelled' do
+      expect(EmailNotificationWorker).to receive(:perform_async).with(
+        'appointment_cancelled', appointment.id
+      )
+      
+      ActsAsTenant.with_tenant(organization) do
+        appointment.cancel!
+      end
+    end
+
+    it 'is triggered when appointment is executed' do
+      expect(EmailNotificationWorker).to receive(:perform_async).with(
+        'appointment_completed', appointment.id
+      )
+      
+      ActsAsTenant.with_tenant(organization) do
+        appointment.execute!
+      end
+    end
+  end
+
+  describe 'performance considerations' do
+    it 'processes jobs quickly' do
+      allow(AppointmentMailer).to receive_message_chain(:appointment_confirmed, :deliver_now)
+      
+      start_time = Time.current
+      
+      ActsAsTenant.with_tenant(organization) do
+        EmailNotificationWorker.new.perform('appointment_confirmed', appointment.id)
+      end
+      
+      execution_time = Time.current - start_time
+      expect(execution_time).to be < 1.second
+    end
+
+    it 'handles high email volume' do
+      appointments = []
+      ActsAsTenant.with_tenant(organization) do
+        appointments = create_list(:appointment, 10, :confirmed, professional: professional, organization: organization)
+      end
+      
+      allow(AppointmentMailer).to receive_message_chain(:appointment_confirmed, :deliver_now)
+      
+      expect {
+        appointments.each do |apt|
+          ActsAsTenant.with_tenant(organization) do
+            EmailNotificationWorker.new.perform('appointment_confirmed', apt.id)
+          end
+        end
+      }.not_to raise_error
+    end
+  end
+end

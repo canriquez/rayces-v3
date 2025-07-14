@@ -17,12 +17,8 @@ require 'shoulda/matchers'
 # end with _spec.rb. You can configure this pattern with the --pattern
 # option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
 #
-# The following line is provided for convenience purposes. It has the downside
-# of increasing the boot-up time by auto-requiring all files in the support
-# directory. Alternatively, in the individual `*_spec.rb` files, manually
-# require only the support files necessary.
-#
-# Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
+# Load support files for shared examples and helpers
+Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
@@ -40,7 +36,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
@@ -63,24 +59,53 @@ RSpec.configure do |config|
   # FactoryBot configuration
   config.include FactoryBot::Syntax::Methods
 
+  # Sidekiq testing configuration - disable Redis for tests
+  require 'sidekiq/testing'
+  Sidekiq::Testing.fake!
+
+  config.before(:each) do
+    Sidekiq::Worker.clear_all
+  end
 
   # Database Cleaner configuration
   config.before(:suite) do
-    DatabaseCleaner.allow_remote_database_url = true 
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.allow_remote_database_url = true
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
+  config.before(:each) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
   end
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Multi-tenancy configuration for tests
+  config.before(:suite) do
+    # Create a default organization for all tests
+    DatabaseCleaner.clean_with(:truncation)
+    $default_organization = FactoryBot.create(:organization, subdomain: 'test-org')
+  end
+  
+  config.before(:each) do
+    # Set default tenant for each test
+    ActsAsTenant.current_tenant = $default_organization
+  end
+  
+  config.after(:each) do
+    # Keep tenant context for DatabaseCleaner
+    # Don't clear the tenant context
+  end
+
+  # Pundit configuration for testing
+  # Note: Pundit test helpers are automatically available in policy specs
 end
 
 Shoulda::Matchers.configure do |config|

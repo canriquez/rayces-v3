@@ -1,0 +1,34 @@
+# config/sidekiq.yml
+---
+:concurrency: 10
+:max_retries: 5
+:timeout: 60
+
+# Sidekiq will run jobs from these queues in order of priority
+:queues:
+  - critical
+  - default
+  - mailers
+  - low
+
+# Environment-specific settings
+development:
+  :concurrency: 5
+
+test:
+  :concurrency: 5
+
+production:
+  :concurrency: 25
+
+# Dead job retention (90 days)
+:dead_max_jobs: 10000
+:dead_timeout_in_seconds: 7776000 # 90 days
+
+# Scheduling configuration (if using sidekiq-cron)
+:schedule:
+  # Example scheduled job
+  # expire_pre_confirmed_appointments:
+  #   cron: "0 * * * *" # Every hour
+  #   class: ExpirePreConfirmedAppointmentsWorker
+  #   queue: critical

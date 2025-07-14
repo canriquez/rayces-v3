@@ -34,7 +34,18 @@ Execute the requirements of a PRP file.
    - Report completion status
    - Read the PRP again to ensure you have implemented everything
 
-6. **Reference the PRP**
+6. **Update Final Status**
+   - Update final test suite status for PRP that is under work
+   - Document completion percentage and status of each major component
+   - Identify any remaining issues or blockers
+
+7. **Generate Results Documentation**
+   - Generate a final `$ARGUMENTS-results.md` file in the PRPs directory
+   - Include all important information for the next PRP execution to review
+   - Document completed tasks, pending work, and continuity requirements
+   - Ensure nothing is forgotten for future development
+
+8. **Reference the PRP**
    - You can always reference the PRP again if needed
 
 Note: If validation fails, use error patterns in PRP to fix and retry.

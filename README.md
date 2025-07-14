@@ -143,6 +143,41 @@ cd rails-api && bundle install && rails server
 cd nextjs && yarn install && yarn dev
 ```
 
+### Running Tests in Development with Skaffold
+
+When developing with Skaffold, the Rails API runs in a Kubernetes pod. Use these commands to interact with the containerized application:
+
+```bash
+# Get the Rails pod name (in raycesv3 namespace)
+kubectl get pods -n raycesv3
+
+# Run all RSpec tests
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rspec
+
+# Run RSpec tests with documentation format
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rspec --format documentation
+
+# Run specific test file
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rspec spec/models/organization_spec.rb
+
+# Run database migrations
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:migrate
+
+# Run database seeds
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:seed
+
+# Access Rails console
+kubectl exec -n raycesv3 -it $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails console
+
+# Check Rails logs
+kubectl logs -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -f
+
+# Run linting/code quality checks
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rubocop
+```
+
+**Note**: The `-it` flag is only needed for interactive commands like the Rails console. For automated commands (tests, migrations, seeds), omit the `-it` flag to avoid TTY warnings.
+
 ### Accessing the Application
 - **Frontend**: http://localhost:3000 (MyHub UI + booking extensions)
 - **API**: http://localhost:4000 (Rails API with social + booking endpoints)

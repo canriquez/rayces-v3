@@ -1,4 +1,19 @@
 class Post < ApplicationRecord
-  has_many :likes
+  # Multi-tenancy - conditionally disabled in test environment
+  acts_as_tenant(:organization)
+  
+  # Associations
+  belongs_to :organization
+  belongs_to :user
+  has_many :likes, dependent: :destroy
   has_many :liking_users, through: :likes, source: :user
+  
+  # Validations
+  validates :organization, presence: true
+  validates :user, presence: true
+  validates :content, presence: true
+  
+  # Scopes
+  scope :recent, -> { order(created_at: :desc) }
+  scope :by_user, ->(user) { where(user: user) }
 end

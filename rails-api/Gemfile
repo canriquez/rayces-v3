@@ -21,6 +21,27 @@ gem 'jwt'
 
 gem 'googleauth'
 
+# Multi-tenancy and Authorization
+gem 'acts_as_tenant', '~> 0.6'
+gem 'pundit', '~> 2.3'
+
+# Authentication with JWT
+gem 'devise', '~> 4.9'
+gem 'devise-jwt', '~> 0.11'
+
+# Background Jobs
+gem 'sidekiq', '~> 7.2'
+gem 'redis', '~> 5.0'
+
+# State Machine
+gem 'aasm', '~> 5.5'
+
+# API Serialization
+gem 'active_model_serializers', '~> 0.10.14'
+
+# Security
+gem 'brakeman', require: false
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
