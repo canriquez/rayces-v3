@@ -49,6 +49,7 @@ Using PRPs/templates/prp_base.md as template:
 - Reference real files for patterns
 - Include error handling strategy
 - list tasks to be completed to fullfill the PRP in the order they should be completed
+- When possible plan tu run and pass all related tests for new implemented code before moving to the next relevant task. This will help you fix tests progressiveley, and not wait until the end.
 
 ### Validation Gates (Must be Executable) eg for python
 ```bash

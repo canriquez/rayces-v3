@@ -59,6 +59,45 @@ RSpec.configure do |config|
   # FactoryBot configuration
   config.include FactoryBot::Syntax::Methods
 
+  # Include authentication helpers for all specs
+  config.include AuthenticationHelpers
+
+  # Include tenant helpers for all specs
+  config.include TenantHelpers
+
+  # JSON response helper for request specs
+  config.include Module.new {
+    def json_response
+      JSON.parse(response.body)
+    end
+  }, type: :request
+
+  # Additional helpers for request specs
+  config.include Module.new {
+    def expect_json_response(expected_keys = [])
+      expect(response.content_type).to eq('application/json; charset=utf-8')
+      
+      if expected_keys.any?
+        response_data = json_response
+        expected_keys.each do |key|
+          expect(response_data).to have_key(key.to_s)
+        end
+      end
+    end
+
+    def expect_unauthorized_response
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    def expect_forbidden_response
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    def expect_not_found_response
+      expect(response).to have_http_status(:not_found)
+    end
+  }, type: :request
+
   # Sidekiq testing configuration - disable Redis for tests
   require 'sidekiq/testing'
   Sidekiq::Testing.fake!
@@ -91,17 +130,20 @@ RSpec.configure do |config|
   config.before(:suite) do
     # Create a default organization for all tests
     DatabaseCleaner.clean_with(:truncation)
-    $default_organization = FactoryBot.create(:organization, subdomain: 'test-org')
+    $default_organization = FactoryBot.create(:organization, 
+      name: 'Test Organization',
+      subdomain: 'test-org'
+    )
   end
   
   config.before(:each) do
-    # Set default tenant for each test
-    ActsAsTenant.current_tenant = $default_organization
+    # Set default tenant for each test unless explicitly managed
+    ActsAsTenant.current_tenant = $default_organization unless ActsAsTenant.current_tenant
   end
   
   config.after(:each) do
-    # Keep tenant context for DatabaseCleaner
-    # Don't clear the tenant context
+    # Reset tenant context after each test for clean slate
+    ActsAsTenant.current_tenant = nil
   end
 
   # Pundit configuration for testing

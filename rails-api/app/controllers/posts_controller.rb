@@ -1,5 +1,11 @@
 class PostsController < ApplicationController
+  include Pundit::Authorization
+  
   before_action :set_post, only: [:show, :update, :destroy]
+  after_action :verify_authorized, except: :index
+  after_action :verify_policy_scoped, only: :index
+  
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # GET /posts
 =begin 
@@ -9,8 +15,9 @@ class PostsController < ApplicationController
 =end
 
   def index
+    @posts = policy_scope(Post)
     user_id = current_user.id
-    all_posts_with_likes = Post.includes(:likes).all
+    all_posts_with_likes = @posts.includes(:likes)
 
     likes_for_user = Like.where(user_id: user_id).pluck(:post_id).to_set
     
@@ -43,13 +50,16 @@ class PostsController < ApplicationController
 
   # GET /posts/:id
   def show
+    authorize @post
     render json: @post
   end
 
   # POST /posts
   def create
     @post = Post.new(post_params)
-
+    @post.user = current_user
+    authorize @post
+    
     if @post.save
       render json: @post, status: :created, location: @post
     else
@@ -59,6 +69,7 @@ class PostsController < ApplicationController
 
   # PATCH/PUT /posts/:id
   def update
+    authorize @post
     if @post.update(post_params)
       render json: @post
     else
@@ -68,7 +79,9 @@ class PostsController < ApplicationController
 
   # DELETE /posts/:id
   def destroy
+    authorize @post
     @post.destroy
+    head :no_content
   end
 
   private
@@ -89,5 +102,10 @@ class PostsController < ApplicationController
       JSON.parse(post.metadata)
     rescue JSON::ParserError
       {}
+    end
+    
+    def user_not_authorized
+      render json: { error: 'You are not authorized to perform this action' }, 
+             status: :forbidden
     end
 end

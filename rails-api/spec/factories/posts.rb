@@ -5,5 +5,12 @@ FactoryBot.define do
     source { "MyString" }
     metadata { "MyText" }
     filename { "MyString" }
+    content { "Test post content" }
+    association :user
+    
+    # Set organization from user to maintain consistency
+    after(:build) do |post, evaluator|
+      post.organization = post.user.organization
+    end
   end
 end

@@ -40,7 +40,8 @@ class ApplicationController < ActionController::API
     jwt_payload = decode_jwt_token(token)
     
     if jwt_payload
-      @current_user = User.find(jwt_payload['sub'])
+      # CRITICAL: JWT payload uses 'user_id' not 'sub'
+      @current_user = User.find(jwt_payload['user_id'])
       # Ensure tenant context matches JWT payload
       if jwt_payload['organization_id'] && 
          ActsAsTenant.current_tenant&.id != jwt_payload['organization_id']
@@ -133,7 +134,8 @@ class ApplicationController < ActionController::API
     @current_user_from_token = if jwt_token_present?
       token = request.headers['Authorization'].split(' ').last
       jwt_payload = decode_jwt_token(token)
-      jwt_payload ? User.find_by(id: jwt_payload['sub']) : nil
+      # CRITICAL: JWT payload uses 'user_id' not 'sub'
+      jwt_payload ? User.find_by(id: jwt_payload['user_id']) : nil
     else
       nil
     end
@@ -177,12 +179,20 @@ class ApplicationController < ActionController::API
   def pundit_user
     # Pass user context with organization for policies
     return nil unless current_user
-    UserContext.new(current_user, current_user.organization)
+    # CRITICAL: Must return UserContext with current organization context
+    organization = current_organization || current_user.organization
+    UserContext.new(current_user, organization)
   end
 
   def skip_tenant_in_tests?
-    # Skip tenant resolution in test environment for SCRUM-32 basic API testing
-    defined?(RSpec) || Rails.env.test?
+    # Only skip tenant resolution for specific test scenarios, not all tests
+    # This allows proper tenant context setup in authorization and multi-tenant tests
+    return false unless Rails.env.test?
+    
+    # Skip for specific controller/action combinations that don't need tenant context
+    (controller_name == 'health' && action_name == 'check') ||
+    (controller_name == 'users' && action_name == 'sign_in') ||
+    request.path.match?(/\/oauth\//)
   end
 
   def find_or_create_user(google_user)

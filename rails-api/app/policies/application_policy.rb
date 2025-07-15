@@ -54,11 +54,8 @@ class ApplicationPolicy
     private
 
     def tenant_scope
-      # Automatically scope to organization for models that support multi-tenancy
-      if in_test_context?
-        # In test context, just return the scope since acts_as_tenant is disabled
-        scope
-      elsif scope.respond_to?(:where) && scope.column_names.include?('organization_id')
+      # Always scope to organization for models that support multi-tenancy
+      if scope.respond_to?(:where) && scope.column_names.include?('organization_id')
         scope.where(organization_id: organization.id)
       else
         scope
@@ -73,10 +70,8 @@ class ApplicationPolicy
   
   # Public helper methods for policies
   def same_tenant?
-    if in_test_context?
-      # In test context, always return true unless explicitly testing cross-tenant scenarios
-      true
-    elsif record.respond_to?(:organization_id) && organization
+    # Always check tenant isolation properly, even in test context
+    if record.respond_to?(:organization_id) && organization
       record.organization_id == organization.id
     else
       false
@@ -84,19 +79,19 @@ class ApplicationPolicy
   end
   
   def admin?
-    user.enhanced_admin?
+    user.admin?
   end
   
   def professional?
-    user.enhanced_professional?
+    user.professional?
   end
   
   def staff?
-    user.enhanced_secretary?
+    user.staff?
   end
   
   def parent?
-    user.enhanced_client?
+    user.guardian?
   end
   
   def owns_record?
