@@ -9,7 +9,7 @@ The file should have the following structure sections
 ## Feature
 ## Examples
 ## Documentation
-## Other considerations
+## Other considerations - e.g: Check README.md to learn key instructions on how to run tests on the current dev environment.
 
 # File content example: Now find below a by section explanation example that should help you generate each of the sections of this file. I will include between double quotes ("") the explanation pargraphs
 

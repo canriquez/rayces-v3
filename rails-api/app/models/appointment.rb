@@ -1,8 +1,8 @@
 class Appointment < ApplicationRecord
   include AASM
   
-  # Multi-tenancy - conditionally disabled in test environment
-  acts_as_tenant(:organization) unless Rails.env.test?
+  # Multi-tenancy
+  acts_as_tenant(:organization)
   
   # Associations
   belongs_to :organization

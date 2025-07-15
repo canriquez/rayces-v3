@@ -1,20 +1,18 @@
 FactoryBot.define do
   factory :appointment do
-    professional { build(:user, :professional) }
-    client { build(:user, :guardian) }
-    student { build(:student) }
-    organization { professional.organization }
+    # Create organization first to ensure tenant consistency
+    transient do
+      shared_organization { create(:organization) }
+    end
+    
+    organization { shared_organization }
+    professional { create(:user, :professional, organization: shared_organization) }
+    client { create(:user, :guardian, organization: shared_organization) }
+    student { create(:student, organization: shared_organization, parent: client) }
     scheduled_at { 1.week.from_now.change(hour: 10, minute: 0) }
     duration_minutes { 60 }
     price { 100.00 }
     state { :draft }
-
-    # Ensure all associations belong to the same organization
-    before(:create) do |appointment|
-      appointment.client.organization = appointment.professional.organization
-      appointment.student.organization = appointment.professional.organization if appointment.student
-      appointment.student.parent = appointment.client if appointment.student
-    end
 
     trait :draft do
       state { :draft }

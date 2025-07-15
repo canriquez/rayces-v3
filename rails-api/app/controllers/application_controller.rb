@@ -3,8 +3,9 @@ class ApplicationController < ActionController::API
   include RackSessionFix
   
   # Multi-tenancy and authentication
-  before_action :set_tenant_from_subdomain, unless: :skip_tenant_in_tests?
+  before_action :resolve_tenant_context, unless: :skip_tenant_in_tests?
   before_action :authenticate_user_flexible
+  before_action :validate_tenant_access, unless: :skip_tenant_in_tests?
   
   # Error handling
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -76,12 +77,97 @@ class ApplicationController < ActionController::API
     nil
   end
   
-  def set_tenant_from_subdomain
-    # Only set tenant from subdomain for non-API routes or when explicitly needed
-    if request.subdomain.present? && request.subdomain != 'www'
-      organization = Organization.find_by_subdomain(request.subdomain)
-      ActsAsTenant.current_tenant = organization if organization
+  # Enhanced tenant resolution with multiple strategies
+  def resolve_tenant_context
+    tenant = resolve_tenant_from_strategies
+    
+    if tenant
+      ActsAsTenant.current_tenant = tenant
+      Rails.logger.debug "[TENANT] Resolved to: #{tenant.id} - #{tenant.name} (#{tenant.subdomain})"
+    else
+      Rails.logger.warn "[TENANT] Could not resolve tenant context"
+      handle_missing_tenant unless allow_missing_tenant?
     end
+  end
+  
+  def resolve_tenant_from_strategies
+    # Strategy 1: Explicit organization header (for API calls)
+    tenant = resolve_tenant_from_header
+    return tenant if tenant
+    
+    # Strategy 2: Subdomain resolution (for web interface)
+    tenant = resolve_tenant_from_subdomain  
+    return tenant if tenant
+    
+    # Strategy 3: User's default organization (fallback for authenticated requests)
+    tenant = resolve_tenant_from_user
+    return tenant if tenant
+    
+    nil
+  end
+  
+  def resolve_tenant_from_header
+    org_header = request.headers['X-Organization-Id'] || request.headers['X-Organization-Subdomain']
+    return nil unless org_header.present?
+    
+    if org_header.match?(/\A\d+\z/) # Numeric ID
+      Organization.find_by(id: org_header)
+    else # Subdomain
+      Organization.find_by(subdomain: org_header)
+    end
+  end
+  
+  def resolve_tenant_from_subdomain
+    return nil unless request.subdomain.present? && request.subdomain != 'www'
+    Organization.find_by(subdomain: request.subdomain)
+  end
+  
+  def resolve_tenant_from_user
+    return nil unless current_user_from_token
+    current_user_from_token.organization
+  end
+  
+  def current_user_from_token
+    return @current_user_from_token if defined?(@current_user_from_token)
+    
+    @current_user_from_token = if jwt_token_present?
+      token = request.headers['Authorization'].split(' ').last
+      jwt_payload = decode_jwt_token(token)
+      jwt_payload ? User.find_by(id: jwt_payload['sub']) : nil
+    else
+      nil
+    end
+  rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+    @current_user_from_token = nil
+  end
+  
+  def validate_tenant_access
+    return unless ActsAsTenant.current_tenant && current_user
+    
+    # Ensure user belongs to the resolved tenant
+    unless current_user.can_access_organization?(ActsAsTenant.current_tenant)
+      Rails.logger.warn "[TENANT] Access denied: User #{current_user.id} cannot access organization #{ActsAsTenant.current_tenant.id}"
+      render_forbidden("You don't have access to this organization")
+    end
+  end
+  
+  def handle_missing_tenant
+    if api_endpoint?
+      render_error('Organization context required. Please specify X-Organization-Id or X-Organization-Subdomain header.', :bad_request)
+    else
+      render_error('Organization not found. Please check the subdomain.', :not_found)
+    end
+  end
+  
+  def allow_missing_tenant?
+    # Allow missing tenant for certain endpoints that don't require organization context
+    devise_controller? || 
+    (controller_name == 'health' && action_name == 'check') ||
+    (controller_name == 'organizations' && action_name == 'index')
+  end
+  
+  def api_endpoint?
+    request.path.start_with?('/api/')
   end
 
   def current_user

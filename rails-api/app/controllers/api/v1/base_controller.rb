@@ -3,9 +3,10 @@ class Api::V1::BaseController < ActionController::API
   include Pundit::Authorization
   include RackSessionFix
   
-  # Authentication
+  # Authentication and tenant resolution
   before_action :authenticate_user!
-  before_action :set_tenant, unless: :skip_tenant_in_tests?
+  before_action :resolve_api_tenant_context, unless: :skip_tenant_in_tests?
+  before_action :validate_api_tenant_access, unless: :skip_tenant_in_tests?
   
   # Authorization
   after_action :verify_authorized, except: :index
@@ -33,12 +34,22 @@ class Api::V1::BaseController < ActionController::API
     
     if jwt_payload
       @current_user = User.find(jwt_payload['sub'])
+      
+      # Validate JTI if present
+      if jwt_payload['jti'] && @current_user.jti != jwt_payload['jti']
+        render_unauthorized('Invalid token')
+        return
+      end
+      
+      @jwt_payload = jwt_payload # Store for tenant validation
       sign_in @current_user, store: false
     else
       render_unauthorized
     end
-  rescue JWT::DecodeError, ActiveRecord::RecordNotFound
-    render_unauthorized
+  rescue JWT::DecodeError => e
+    render_unauthorized('Invalid token')
+  rescue ActiveRecord::RecordNotFound
+    render_unauthorized('User not found')
   end
   
   def decode_jwt_token(token)
@@ -52,17 +63,68 @@ class Api::V1::BaseController < ActionController::API
     nil
   end
   
-  def set_tenant
-    # Set tenant based on subdomain or user's organization
-    if request.subdomain.present? && request.subdomain != 'www'
-      organization = Organization.find_by_subdomain(request.subdomain)
-      if organization && current_user.organization_id == organization.id
-        ActsAsTenant.current_tenant = organization
-      else
-        render_forbidden("Invalid organization access")
+  # Enhanced API tenant resolution with strict validation
+  def resolve_api_tenant_context
+    tenant = resolve_api_tenant_from_strategies
+    
+    if tenant
+      ActsAsTenant.current_tenant = tenant
+      Rails.logger.debug "[API TENANT] Resolved to: #{tenant.id} - #{tenant.name} (#{tenant.subdomain})"
+    else
+      Rails.logger.warn "[API TENANT] Could not resolve tenant context"
+      render_error('Organization context required. Please specify X-Organization-Id or X-Organization-Subdomain header.', :bad_request)
+    end
+  end
+  
+  def resolve_api_tenant_from_strategies
+    # Strategy 1: Explicit organization header (preferred for API)
+    tenant = resolve_tenant_from_api_headers
+    return tenant if tenant
+    
+    # Strategy 2: JWT payload organization_id
+    tenant = resolve_tenant_from_jwt_payload
+    return tenant if tenant
+    
+    # Strategy 3: User's default organization (fallback)
+    tenant = current_user&.organization
+    return tenant if tenant
+    
+    nil
+  end
+  
+  def resolve_tenant_from_api_headers
+    org_header = request.headers['X-Organization-Id'] || request.headers['X-Organization-Subdomain']
+    return nil unless org_header.present?
+    
+    if org_header.match?(/\A\d+\z/) # Numeric ID
+      Organization.find_by(id: org_header)
+    else # Subdomain
+      Organization.find_by(subdomain: org_header)
+    end
+  end
+  
+  def resolve_tenant_from_jwt_payload
+    return nil unless @jwt_payload && @jwt_payload['organization_id']
+    Organization.find_by(id: @jwt_payload['organization_id'])
+  end
+  
+  def validate_api_tenant_access
+    return unless ActsAsTenant.current_tenant && current_user
+    
+    # Strict validation for API: user must belong to the resolved tenant
+    unless current_user.can_access_organization?(ActsAsTenant.current_tenant)
+      Rails.logger.warn "[API TENANT] Access denied: User #{current_user.id} cannot access organization #{ActsAsTenant.current_tenant.id}"
+      render_forbidden("You don't have access to this organization")
+      return
+    end
+    
+    # Additional JWT validation: ensure JWT organization_id matches resolved tenant
+    if @jwt_payload && @jwt_payload['organization_id']
+      jwt_org_id = @jwt_payload['organization_id']
+      unless jwt_org_id == ActsAsTenant.current_tenant.id
+        Rails.logger.warn "[API TENANT] JWT organization mismatch: JWT=#{jwt_org_id}, Resolved=#{ActsAsTenant.current_tenant.id}"
+        render_forbidden("Invalid organization access - token mismatch")
       end
-    elsif current_user
-      ActsAsTenant.current_tenant = current_user.organization
     end
   end
   
@@ -77,8 +139,8 @@ class Api::V1::BaseController < ActionController::API
     render json: { error: message }, status: status
   end
   
-  def render_unauthorized
-    render_error('Unauthorized', :unauthorized)
+  def render_unauthorized(message = 'Unauthorized')
+    render_error(message, :unauthorized)
   end
   
   def not_found
@@ -87,6 +149,10 @@ class Api::V1::BaseController < ActionController::API
   
   def forbidden(exception = nil)
     message = exception&.message || 'You are not authorized to perform this action'
+    render_error(message, :forbidden)
+  end
+  
+  def render_forbidden(message = 'You are not authorized to perform this action')
     render_error(message, :forbidden)
   end
   

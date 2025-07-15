@@ -19,6 +19,7 @@ The AI agent only gets the context you are appending to the PRP and training dat
    - Identify files to reference in PRP
    - Note existing conventions to follow
    - Check test patterns for validation approach
+   - Run local tests to learn details of the failing tests that the issue must resolve (if any)
 
 3. **External Research**
    - Search for similar features/patterns online
@@ -29,6 +30,9 @@ The AI agent only gets the context you are appending to the PRP and training dat
 4. **User Clarification** (if needed)
    - Specific patterns to mirror and where to find them?
    - Integration requirements and where to find them?
+
+5. **Development process**
+   - THIS IS IMPORTANT. DO NOT FORGET: Check the /README.md file for detailed instructions of how to Running Tests in Development with Skaffold for this repository. Then add this instructions to PRPs/{{$ARGUMENTS}}.md so running tests work with no issues, and you never forget how to run tests.
 
 ## PRP Generation
 

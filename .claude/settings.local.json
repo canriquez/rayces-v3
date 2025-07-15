@@ -3,7 +3,29 @@
     "allow": [
       "mcp__github__list_issues",
       "mcp__github__get_issue",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__github__search_repositories",
+      "mcp__github__search_issues",
+      "mcp__atlassian__jira_get_issue",
+      "mcp__atlassian__confluence_search",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(mkdir:*)",
+      "Bash(rubocop:*)",
+      "Bash(kubectl get pods:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl exec:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "mcp__atlassian__jira_search",
+      "mcp__atlassian__confluence_get_page",
+      "mcp__atlassian__jira_create_issue",
+      "mcp__atlassian__jira_update_issue",
+      "mcp__atlassian__confluence_update_page",
+      "mcp__github__create_issue",
+      "Bash(mv:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

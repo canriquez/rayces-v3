@@ -2,18 +2,15 @@
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-# Clear existing data in development
-if Rails.env.development?
-  puts "Clearing existing data..."
-  # Temporarily disable tenant requirement for clearing data
-  ActsAsTenant.without_tenant do
-    Appointment.delete_all
-    Professional.delete_all
-    Student.delete_all
-    Like.delete_all
-    Post.delete_all
-    User.delete_all
-    Organization.delete_all
+# Check if data already exists
+ActsAsTenant.without_tenant do
+  if Organization.count > 0
+    puts "Data already exists. Skipping seed creation..."
+    puts "Organizations: #{Organization.count}"
+    puts "Users: #{User.count}"
+    puts "Roles: #{Role.count}"
+    puts "UserRoles: #{UserRole.count}"
+    exit
   end
 end
 
@@ -51,6 +48,11 @@ demo_org = Organization.create!(
 )
 
 puts "Created #{Organization.count} organizations"
+
+# Ensure default roles exist for all organizations (they should be created automatically via callback)
+rayces_org.ensure_default_roles!
+demo_org.ensure_default_roles!
+puts "Default roles created for all organizations"
 
 # Create users for Rayces organization based on real team data
 ActsAsTenant.with_tenant(rayces_org) do
@@ -201,6 +203,31 @@ ActsAsTenant.with_tenant(rayces_org) do
   )
   
   puts "Created #{User.count} users for Rayces organization"
+  
+  # Assign roles in the new role system for all users
+  puts "Assigning roles in new role system..."
+  
+  # Admin role
+  admin.assign_role('admin')
+  
+  # Professional roles
+  maria_cavanagh.assign_role('professional')
+  julieta_dip.assign_role('professional')
+  ana_lagrotteria.assign_role('professional')
+  diana_garcia.assign_role('professional')
+  gabriela_heredia.assign_role('professional')
+  julia_veneranda.assign_role('professional')
+  priscila_tarifa.assign_role('professional')
+  
+  # Secretary role
+  cecilia_gonzalez.assign_role('secretary')
+  
+  # Client roles
+  parent1.assign_role('client')
+  parent2.assign_role('client')
+  parent3.assign_role('client')
+  
+  puts "Role assignments completed for Rayces organization"
   
   # Create professional profiles based on real Rayces team data
   puts "Creating professional profiles..."
@@ -557,6 +584,11 @@ ActsAsTenant.with_tenant(demo_org) do
     jti: SecureRandom.uuid
   )
   
+  # Assign roles in the new role system for demo users
+  demo_admin.assign_role('admin')
+  demo_professional.assign_role('professional')
+  demo_parent.assign_role('client')
+  
   Professional.create!(
     user: demo_professional,
     organization: demo_org,
@@ -567,7 +599,7 @@ ActsAsTenant.with_tenant(demo_org) do
     hourly_rate: 100.00
   )
   
-  puts "Created demo organization data"
+  puts "Created demo organization data with role assignments"
 end
 
 # Legacy MyHub posts (preserve existing functionality)
@@ -582,6 +614,8 @@ puts "=== SEED DATA SUMMARY ==="
 ActsAsTenant.without_tenant do
   puts "Organizations: #{Organization.count}"
   puts "Users: #{User.count}"
+  puts "Roles: #{Role.count}"
+  puts "User Role Assignments: #{UserRole.count}"
   puts "Professionals: #{Professional.count}"
   puts "Students: #{Student.count}"
   puts "Appointments: #{Appointment.count}"

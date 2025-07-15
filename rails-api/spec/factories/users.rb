@@ -23,11 +23,25 @@ FactoryBot.define do
       last_name { "Professional" }
     end
 
+    trait :secretary do
+      role { :staff }
+      sequence(:email) { |n| "secretary#{n}@example.com" }
+      first_name { "Secretary" }
+      last_name { "Staff" }
+    end
+
     trait :staff do
       role { :staff }
       sequence(:email) { |n| "staff#{n}@example.com" }
       first_name { "Staff" }
       last_name { "Member" }
+    end
+
+    trait :client do
+      role { :guardian }
+      sequence(:email) { |n| "client#{n}@example.com" }
+      first_name { "Client" }
+      last_name { "Parent" }
     end
 
     trait :parent do

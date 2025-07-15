@@ -84,19 +84,19 @@ class ApplicationPolicy
   end
   
   def admin?
-    user.admin?
+    user.enhanced_admin?
   end
   
   def professional?
-    user.professional?
+    user.enhanced_professional?
   end
   
   def staff?
-    user.staff?
+    user.enhanced_secretary?
   end
   
   def parent?
-    user.parent? || user.guardian?
+    user.enhanced_client?
   end
   
   def owns_record?
