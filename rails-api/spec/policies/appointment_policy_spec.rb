@@ -2,24 +2,64 @@ require 'rails_helper'
 
 RSpec.describe AppointmentPolicy, type: :policy do
   let(:organization) { create(:organization) }
-  let(:admin_user) { create(:user, :admin, organization: organization) }
-  let(:professional_user) { create(:user, :professional, organization: organization) }
-  let(:staff_user) { create(:user, :staff, organization: organization) }
-  let(:parent_user) { create(:user, :guardian, organization: organization) }
-  let(:other_parent) { create(:user, :guardian, organization: organization) }
+  let(:admin_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :admin, organization: organization)
+    end
+  end
+  let(:professional_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :professional, organization: organization)
+    end
+  end
+  let(:staff_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :staff, organization: organization)
+    end
+  end
+  let(:parent_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :guardian, organization: organization)
+    end
+  end
+  let(:other_parent) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :guardian, organization: organization)
+    end
+  end
   
-  let(:professional) { create(:professional, user: professional_user, organization: organization) }
-  let(:appointment) { create(:appointment, professional: professional_user, client: parent_user, organization: organization) }
-  let(:other_appointment) { create(:appointment, professional: professional_user, client: other_parent, organization: organization) }
+  let(:professional) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:professional, user: professional_user, organization: organization)
+    end
+  end
+  let(:appointment) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:appointment, professional: professional_user, client: parent_user, organization: organization)
+    end
+  end
+  let(:other_appointment) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:appointment, professional: professional_user, client: other_parent, organization: organization)
+    end
+  end
   
   let(:other_org) { create(:organization, subdomain: 'other') }
-  let(:other_org_user) { create(:user, :admin, organization: other_org) }
+  let(:other_org_user) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:user, :admin, organization: other_org)
+    end
+  end
 
   describe 'Scope' do
     before do
-      @appointment1 = create(:appointment, professional: professional_user, client: parent_user, organization: organization)
-      @appointment2 = create(:appointment, professional: professional_user, client: other_parent, organization: organization)
-      @other_appointment = create(:appointment, organization: other_org)
+      ActsAsTenant.with_tenant(organization) do
+        @appointment1 = create(:appointment, professional: professional_user, client: parent_user, organization: organization)
+        @appointment2 = create(:appointment, professional: professional_user, client: other_parent, organization: organization)
+      end
+      ActsAsTenant.with_tenant(other_org) do
+        @other_appointment = create(:appointment, organization: other_org)
+      end
     end
 
     it 'returns appointments for user organization only', :pending do
@@ -79,9 +119,10 @@ RSpec.describe AppointmentPolicy, type: :policy do
       expect(policy.show?).to be_falsy
     end
 
-    it 'denies access to appointments from other organizations', :pending do
-      # NOTE: Multi-tenancy isolation belongs to SCRUM-33, not SCRUM-32
-      other_org_appointment = create(:appointment, organization: other_org)
+    it 'denies access to appointments from other organizations' do
+      other_org_appointment = ActsAsTenant.with_tenant(other_org) do
+        create(:appointment, organization: other_org)
+      end
       user_context = UserContext.new(admin_user, organization)
       policy = AppointmentPolicy.new(user_context, other_org_appointment)
       expect(policy.show?).to be_falsy

@@ -1,15 +1,49 @@
 require 'rails_helper'
 
 RSpec.describe LikePolicy, type: :policy do
-  let(:organization) { create(:organization) }
-  let(:user) { create(:user, organization: organization) }
-  let(:admin_user) { create(:user, :admin, organization: organization) }
-  let(:other_org_user) { create(:user) }
+  # Clear default tenant to ensure proper isolation
+  before(:each) do
+    ActsAsTenant.current_tenant = nil
+  end
   
-  let(:post) { create_with_tenant(user.organization, :post, user: user) }
-  let(:other_org_post) { create_with_tenant(other_org_user.organization, :post, user: other_org_user) }
-  let(:like) { create_with_tenant(user.organization, :like, user: user, post: post) }
-  let(:other_org_like) { create_with_tenant(other_org_user.organization, :like, user: other_org_user, post: other_org_post) }
+  let(:organization) { create(:organization) }
+  let(:user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, organization: organization)
+    end
+  end
+  let(:admin_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :admin, organization: organization)
+    end
+  end
+  let(:other_org) { create(:organization) }
+  let(:other_org_user) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:user, organization: other_org)
+    end
+  end
+  
+  let(:post) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:post, user: user, organization: organization)
+    end
+  end
+  let(:other_org_post) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:post, user: other_org_user, organization: other_org)
+    end
+  end
+  let(:like) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:like, user: user, post: post, organization: organization)
+    end
+  end
+  let(:other_org_like) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:like, user: other_org_user, post: other_org_post, organization: other_org)
+    end
+  end
   
   subject { described_class }
   
@@ -59,8 +93,13 @@ RSpec.describe LikePolicy, type: :policy do
     let(:scope) { described_class::Scope.new(user_context, Like).resolve }
     
     before do
-      create_with_tenant(user.organization, :like, user: user, post: post)
-      create_with_tenant(other_org_user.organization, :like, user: other_org_user, post: other_org_post)
+      ActsAsTenant.with_tenant(organization) do
+        create(:like, user: user, post: post, organization: organization)
+      end
+      
+      ActsAsTenant.with_tenant(other_org) do
+        create(:like, user: other_org_user, post: other_org_post, organization: other_org)
+      end
     end
     
     it 'returns only likes from same organization' do

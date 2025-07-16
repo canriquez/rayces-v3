@@ -55,7 +55,7 @@ class ApplicationPolicy
 
     def tenant_scope
       # Always scope to organization for models that support multi-tenancy
-      if scope.respond_to?(:where) && scope.column_names.include?('organization_id')
+      if scope.respond_to?(:where) && scope.column_names.include?('organization_id') && organization.present?
         scope.where(organization_id: organization.id)
       else
         scope

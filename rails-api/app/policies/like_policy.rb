@@ -1,12 +1,19 @@
 # app/policies/like_policy.rb
 class LikePolicy < ApplicationPolicy
   def show?
-    same_tenant? # Likes must be in same organization
+    # Allow viewing like status if post is in same organization
+    # This handles both existing likes and checking if user can like a post
+    if record.persisted?
+      same_tenant? # For existing likes, check tenant
+    else
+      # For new like objects (checking if user can like), check post tenant
+      post_in_organization?
+    end
   end
   
   def create?
     # Users can only like posts in their organization
-    same_tenant? && post_in_organization?
+    post_in_organization?
   end
   
   def destroy?
@@ -17,7 +24,15 @@ class LikePolicy < ApplicationPolicy
   
   def post_in_organization?
     # Ensure the liked post is in the same organization
-    record.post.user.organization_id == user.organization_id
+    return false unless record.post
+    
+    # Check if post belongs to same organization (via post's organization_id)
+    if record.post.respond_to?(:organization_id)
+      record.post.organization_id == organization.id
+    else
+      # Fallback: check via post's user organization
+      record.post.user.organization_id == organization.id
+    end
   end
   
   class Scope < ApplicationPolicy::Scope

@@ -334,7 +334,10 @@ RSpec.describe UserRole, type: :model do
       Role.create_defaults_for_organization(org1) unless org1.roles.exists?
       Role.create_defaults_for_organization(org2) unless org2.roles.exists?
       
-      different_user = create(:user, organization: org2, email: "mismatch-#{Time.now.to_i}@example.com")
+      # Create user explicitly in org2 context to ensure proper organization assignment
+      different_user = ActsAsTenant.with_tenant(org2) do
+        create(:user, organization: org2, email: "mismatch-#{Time.now.to_i}@example.com")
+      end
       role_from_org1 = org1.roles.find_by(key: 'professional')
       
       # This should fail because user is from org2 but role is from org1

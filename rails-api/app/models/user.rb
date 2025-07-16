@@ -65,10 +65,11 @@ class User < ApplicationRecord
   # Instance methods
   def jwt_payload
     {
-      'sub' => id,
+      'user_id' => id,
       'email' => email,
       'role' => role,
-      'organization_id' => organization_id
+      'organization_id' => organization_id,
+      'jti' => jti
     }
   end
   

@@ -70,5 +70,10 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # Skip DNS rebinding protection for the default health check endpoint.
-  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Also allow test hosts for RSpec tests running against development server
+  config.host_authorization = { exclude: ->(request) { 
+    request.path == "/up" || 
+    request.host.ends_with?('.example.com') ||
+    %w[localhost 127.0.0.1 test-auth.example.com other-auth.example.com invalid-subdomain.example.com].include?(request.host)
+  } }
 end

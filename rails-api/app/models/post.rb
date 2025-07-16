@@ -8,10 +8,10 @@ class Post < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :liking_users, through: :likes, source: :user
   
-  # Validations
+  # Validations (Updated to match schema)
   validates :organization, presence: true
   validates :user, presence: true
-  validates :content, presence: true, length: { minimum: 1, maximum: 1000 }
+  validates :source, presence: true
   validate :user_belongs_to_organization
   
   # Scopes
@@ -57,7 +57,15 @@ class Post < ApplicationRecord
   end
   
   def excerpt(length = 100)
-    content.truncate(length)
+    (source || "").truncate(length)
+  end
+  
+  def content
+    source # Alias for backward compatibility
+  end
+  
+  def content=(value)
+    self.source = value # Alias for backward compatibility
   end
   
   private

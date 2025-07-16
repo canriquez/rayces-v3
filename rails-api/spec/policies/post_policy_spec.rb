@@ -1,17 +1,39 @@
 require 'rails_helper'
 
 RSpec.describe PostPolicy, type: :policy do
+  # Clear default tenant to ensure proper isolation
+  before(:each) do
+    ActsAsTenant.current_tenant = nil
+  end
+  
   let(:organization) { create(:organization) }
-  let(:user) { create(:user, organization: organization) }
-  let(:admin_user) { create(:user, :admin, organization: organization) }
-  let(:other_org_user) { create(:user) }
+  let(:user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, organization: organization)
+    end
+  end
+  let(:admin_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :admin, organization: organization)
+    end
+  end
+  let(:other_org) { create(:organization) }
+  let(:other_org_user) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:user, organization: other_org)
+    end
+  end
   
   let(:post) do
-    create_with_tenant(user.organization, :post, user: user)
+    ActsAsTenant.with_tenant(organization) do
+      create(:post, user: user, organization: organization)
+    end
   end
   
   let(:other_org_post) do
-    create_with_tenant(other_org_user.organization, :post, user: other_org_user)
+    ActsAsTenant.with_tenant(other_org) do
+      create(:post, user: other_org_user, organization: other_org)
+    end
   end
   
   subject { described_class }
@@ -67,8 +89,13 @@ RSpec.describe PostPolicy, type: :policy do
     
     before do
       # Create posts with proper tenant context
-      create_with_tenant(user.organization, :post, user: user)
-      create_with_tenant(other_org_user.organization, :post, user: other_org_user)
+      ActsAsTenant.with_tenant(organization) do
+        create(:post, user: user, organization: organization)
+      end
+      
+      ActsAsTenant.with_tenant(other_org) do
+        create(:post, user: other_org_user, organization: other_org)
+      end
     end
     
     it 'returns only posts from same organization' do

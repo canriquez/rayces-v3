@@ -22,11 +22,11 @@ module AuthenticationHelpers
       iat: Time.current.to_i
     }
 
-    JWT.encode(payload, Rails.application.credentials.devise_jwt_secret_key)
+    JWT.encode(payload, jwt_secret_key)
   end
 
   def decode_jwt_token(token)
-    JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key).first
+    JWT.decode(token, jwt_secret_key).first
   rescue JWT::DecodeError => e
     Rails.logger.error "JWT decode error: #{e.message}"
     nil
@@ -67,7 +67,7 @@ module AuthenticationHelpers
       iat: 2.hours.ago.to_i
     }
 
-    JWT.encode(payload, Rails.application.credentials.devise_jwt_secret_key)
+    JWT.encode(payload, jwt_secret_key)
   end
 
   def auth_headers_with_expired_token(user)
@@ -109,5 +109,13 @@ module AuthenticationHelpers
       'Content-Type' => 'application/json',
       'Accept' => 'application/json'
     }
+  end
+  
+  private
+  
+  def jwt_secret_key
+    Rails.application.credentials.devise_jwt_secret_key || 
+    Rails.application.credentials.secret_key_base || 
+    ENV['SECRET_KEY_BASE']
   end
 end

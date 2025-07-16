@@ -97,6 +97,11 @@ RSpec.configure do |config|
       expect(response).to have_http_status(:not_found)
     end
   }, type: :request
+  
+  # Override default host for request specs to avoid host authorization issues
+  config.before(:each, type: :request) do
+    host! 'localhost'
+  end
 
   # Sidekiq testing configuration - disable Redis for tests
   require 'sidekiq/testing'

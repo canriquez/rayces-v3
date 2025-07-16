@@ -178,6 +178,8 @@ kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | gr
 
 **Note**: The `-it` flag is only needed for interactive commands like the Rails console. For automated commands (tests, migrations, seeds), omit the `-it` flag to avoid TTY warnings.
 
+**Important**: When developing with `skaffold dev`, code changes automatically trigger pod restarts. The service monitors file changes and kills/respins pods automatically (~5 seconds). Do NOT manually restart deployments with `kubectl rollout restart` as this is unnecessary and skaffold handles hot reloading.
+
 ### Accessing the Application
 - **Frontend**: http://localhost:3000 (MyHub UI + booking extensions)
 - **API**: http://localhost:4000 (Rails API with social + booking endpoints)

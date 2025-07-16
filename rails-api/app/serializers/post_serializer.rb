@@ -3,8 +3,4 @@ class PostSerializer < ActiveModel::Serializer
   
   belongs_to :user
   has_many :likes
-  
-  def user
-    UserSerializer.new(object.user)
-  end
 end

@@ -3,6 +3,7 @@ class Api::V1::UsersController < Api::V1::BaseController
   before_action :set_user, only: [:show, :update, :destroy]
   
   def index
+    authorize User
     @users = policy_scope(User)
     render_paginated(@users, UserSerializer)
   end
@@ -13,6 +14,12 @@ class Api::V1::UsersController < Api::V1::BaseController
   end
   
   def create
+    # Security check: reject attempts to create users in different organizations
+    if params[:user][:organization_id] && params[:user][:organization_id].to_i != current_user.organization_id
+      render_forbidden("Cannot create users in different organizations")
+      return
+    end
+    
     @user = User.new(user_params)
     @user.organization = current_user.organization
     

@@ -2,11 +2,27 @@ require 'rails_helper'
 
 RSpec.describe ApplicationPolicy, type: :policy do
   let(:organization) { create(:organization) }
-  let(:admin_user) { create(:user, :admin, organization: organization) }
-  let(:professional_user) { create(:user, :professional, organization: organization) }
-  let(:parent_user) { create(:user, :parent, organization: organization) }
+  let(:admin_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :admin, organization: organization)
+    end
+  end
+  let(:professional_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :professional, organization: organization)
+    end
+  end
+  let(:parent_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :parent, organization: organization)
+    end
+  end
   let(:other_org) { create(:organization, subdomain: 'other') }
-  let(:other_user) { create(:user, :admin, organization: other_org) }
+  let(:other_user) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:user, :admin, organization: other_org)
+    end
+  end
 
   describe 'Scope' do
     let(:user) { admin_user }
@@ -26,7 +42,11 @@ RSpec.describe ApplicationPolicy, type: :policy do
   end
 
   describe 'base policy methods' do
-    let(:record) { create(:user, organization: organization) }
+    let(:record) do
+      ActsAsTenant.with_tenant(organization) do
+        create(:user, organization: organization)
+      end
+    end
     let(:user_context) { UserContext.new(admin_user, organization) }
     let(:policy) { ApplicationPolicy.new(user_context, record) }
 
@@ -35,9 +55,10 @@ RSpec.describe ApplicationPolicy, type: :policy do
         expect(policy.same_tenant?).to be_truthy
       end
 
-      it 'returns false when record belongs to different organization', :pending do
-        # NOTE: Multi-tenancy validation belongs to SCRUM-33, not SCRUM-32
-        other_record = create(:user, organization: other_org)
+      it 'returns false when record belongs to different organization' do
+        other_record = ActsAsTenant.with_tenant(other_org) do
+          create(:user, organization: other_org)
+        end
         other_policy = ApplicationPolicy.new(user_context, other_record)
         expect(other_policy.same_tenant?).to be_falsy
       end
@@ -119,12 +140,15 @@ RSpec.describe ApplicationPolicy, type: :policy do
   end
 
   describe 'multi-tenant isolation' do
-    let(:record) { create(:user, organization: other_org) }
+    let(:record) do
+      ActsAsTenant.with_tenant(other_org) do
+        create(:user, organization: other_org)
+      end
+    end
     let(:user_context) { UserContext.new(admin_user, organization) }
     let(:policy) { ApplicationPolicy.new(user_context, record) }
 
-    it 'automatically denies access to records from other tenants', :pending do
-      # NOTE: Multi-tenancy isolation belongs to SCRUM-33, not SCRUM-32
+    it 'automatically denies access to records from other tenants' do
       expect(policy.same_tenant?).to be_falsy
       # Most policies should check same_tenant? before allowing access
     end

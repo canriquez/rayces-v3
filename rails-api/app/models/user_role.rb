@@ -89,7 +89,11 @@ class UserRole < ApplicationRecord
   end
   
   def set_organization_from_associations
-    self.organization ||= user&.organization || role&.organization
+    # Only set organization automatically if it's not already explicitly set
+    # This allows for testing organization mismatches and explicit organization assignment
+    if organization.nil?
+      self.organization = user&.organization || role&.organization
+    end
   end
   
   def set_assigned_at

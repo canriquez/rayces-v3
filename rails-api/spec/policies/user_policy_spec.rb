@@ -2,18 +2,42 @@ require 'rails_helper'
 
 RSpec.describe UserPolicy, type: :policy do
   let(:organization) { create(:organization) }
-  let(:admin_user) { create(:user, :admin, organization: organization) }
-  let(:professional_user) { create(:user, :professional, organization: organization) }
-  let(:staff_user) { create(:user, :staff, organization: organization) }
-  let(:parent_user) { create(:user, :guardian, organization: organization) }
+  let(:admin_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :admin, organization: organization)
+    end
+  end
+  let(:professional_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :professional, organization: organization)
+    end
+  end
+  let(:staff_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :staff, organization: organization)
+    end
+  end
+  let(:parent_user) do
+    ActsAsTenant.with_tenant(organization) do
+      create(:user, :guardian, organization: organization)
+    end
+  end
   let(:other_org) { create(:organization, subdomain: 'other') }
-  let(:other_user) { create(:user, :admin, organization: other_org) }
+  let(:other_user) do
+    ActsAsTenant.with_tenant(other_org) do
+      create(:user, :admin, organization: other_org)
+    end
+  end
 
   describe 'Scope' do
     before do
-      @user1 = create(:user, organization: organization)
-      @user2 = create(:user, organization: organization)
-      @other_user = create(:user, organization: other_org)
+      ActsAsTenant.with_tenant(organization) do
+        @user1 = create(:user, organization: organization)
+        @user2 = create(:user, organization: organization)
+      end
+      ActsAsTenant.with_tenant(other_org) do
+        @other_user = create(:user, organization: other_org)
+      end
     end
 
     it 'returns only users from the same organization', :pending do
@@ -53,7 +77,11 @@ RSpec.describe UserPolicy, type: :policy do
   end
 
   describe '#show?' do
-    let(:target_user) { create(:user, organization: organization) }
+    let(:target_user) do
+      ActsAsTenant.with_tenant(organization) do
+        create(:user, organization: organization)
+      end
+    end
 
     it 'allows admins to view any user in organization' do
       user_context = UserContext.new(admin_user, organization)
@@ -85,8 +113,7 @@ RSpec.describe UserPolicy, type: :policy do
       expect(policy.show?).to be_falsy
     end
 
-    it 'denies access to users from different organizations', :pending do
-      # NOTE: Multi-tenancy isolation belongs to SCRUM-33, not SCRUM-32
+    it 'denies access to users from different organizations' do
       user_context = UserContext.new(admin_user, organization)
       policy = UserPolicy.new(user_context, other_user)
       expect(policy.show?).to be_falsy
@@ -120,7 +147,11 @@ RSpec.describe UserPolicy, type: :policy do
   end
 
   describe '#update?' do
-    let(:target_user) { create(:user, organization: organization) }
+    let(:target_user) do
+      ActsAsTenant.with_tenant(organization) do
+        create(:user, organization: organization)
+      end
+    end
 
     it 'allows admins to update any user' do
       user_context = UserContext.new(admin_user, organization)
@@ -129,8 +160,12 @@ RSpec.describe UserPolicy, type: :policy do
     end
 
     it 'allows staff to update parent users only' do
-      parent = create(:user, :guardian, organization: organization)
-      professional = create(:user, :professional, organization: organization)
+      parent = ActsAsTenant.with_tenant(organization) do
+        create(:user, :guardian, organization: organization)
+      end
+      professional = ActsAsTenant.with_tenant(organization) do
+        create(:user, :professional, organization: organization)
+      end
       
       user_context = UserContext.new(staff_user, organization)
       
@@ -147,8 +182,7 @@ RSpec.describe UserPolicy, type: :policy do
       expect(policy.update?).to be_truthy
     end
 
-    it 'denies updating users from different organizations', :pending do
-      # NOTE: Multi-tenancy isolation belongs to SCRUM-33, not SCRUM-32
+    it 'denies updating users from different organizations' do
       user_context = UserContext.new(admin_user, organization)
       policy = UserPolicy.new(user_context, other_user)
       expect(policy.update?).to be_falsy
@@ -156,7 +190,11 @@ RSpec.describe UserPolicy, type: :policy do
   end
 
   describe '#destroy?' do
-    let(:target_user) { create(:user, organization: organization) }
+    let(:target_user) do
+      ActsAsTenant.with_tenant(organization) do
+        create(:user, organization: organization)
+      end
+    end
 
     it 'allows admins to destroy users (except themselves)' do
       user_context = UserContext.new(admin_user, organization)
@@ -188,8 +226,7 @@ RSpec.describe UserPolicy, type: :policy do
   end
 
   describe 'multi-tenant security' do
-    it 'prevents cross-tenant access even for admins', :pending do
-      # NOTE: Multi-tenancy security belongs to SCRUM-33, not SCRUM-32
+    it 'prevents cross-tenant access even for admins' do
       user_context = UserContext.new(admin_user, organization)
       policy = UserPolicy.new(user_context, other_user)
       

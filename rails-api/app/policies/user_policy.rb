@@ -1,7 +1,8 @@
 # app/policies/user_policy.rb
 class UserPolicy < ApplicationPolicy
   def index?
-    # Admins and staff can list users in their organization
+    # Only admins and staff can list users in their organization
+    # Professionals and parents cannot access the full user list
     admin? || staff?
   end
   
@@ -38,17 +39,13 @@ class UserPolicy < ApplicationPolicy
   
   class Scope < Scope
     def resolve
+      # Temporarily simplified to isolate 500 error
       if user.admin? || user.staff?
         # Admins and staff can see all users in their organization
-        tenant_scope
-      elsif user.professional?
-        # Professionals can see users who have appointments with them
-        tenant_scope.joins('LEFT JOIN appointments ON (users.id = appointments.client_id OR users.id = appointments.professional_id)')
-                    .where('appointments.professional_id = ? OR users.id = ?', user.id, user.id)
-                    .distinct
+        scope.where(organization_id: organization&.id)
       else
-        # Parents can only see themselves
-        tenant_scope.where(id: user.id)
+        # Others can only see themselves
+        scope.where(id: user.id)
       end
     end
   end

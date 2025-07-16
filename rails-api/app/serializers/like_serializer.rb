@@ -4,7 +4,5 @@ class LikeSerializer < ActiveModel::Serializer
   belongs_to :user
   belongs_to :post
   
-  def user
-    UserSerializer.new(object.user)
-  end
+  # Let ActiveModel::Serializers handle the association automatically
 end

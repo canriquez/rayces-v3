@@ -9,9 +9,10 @@ Execute the requirements of a PRP file.
 1. **Load PRP**
    - Read the specified PRP file on /PRPs/{{$ARGUMENTS}}.md
    - Understand all context and requirements
-   - Follow all instructions in the PRP and extend the research if needed
+   - Follow all instructions in the PRP and extend the research to the internet if needed
    - Ensure you have all needed context to implement the PRP fully
    - Do more web searches and codebase exploration as needed
+   - SUPER IMPORTANT. YOU MUST DO THIS: Check for the existance of the file /PRPs/{{$ARGUMENTS}}-execution-log.md. If this file exists it means that this PR is still work in progress. On that case after reading the  file on /PRPs/{{$ARGUMENTS}}.md, make sure you learn about the latest progress for this prp inside /PRPs/{{$ARGUMENTS}}-execution-log and you then continue with the execution.
 
 2. **ULTRATHINK**
    - Think hard before you execute the plan. Create a comprehensive plan addressing all requirements.
@@ -24,9 +25,20 @@ Execute the requirements of a PRP file.
    - Implement all the code
    - If in the middle of the process you auto compact the context, after compactation you must read the current prp file on /PRPs/{{$ARGUMENTS}}.md file refresh again the plan and compare against your current progress.
 
+   **Execute the plan at all costs**
+   - Always create comprehensive tests that test for happy path and common edge cases all the new logic and units that you are creating.
+   - ALWAYS, ALWAYS make all the tests pass. For this you will need to adjust the logic and adjust the testing infrastructure if needed.
+   - When finding a fix for a problem exaust all current ideas, PLEASe make sure you do a search on the intenet to look for ideas and related examples or solutions. This has proven in the past that provided great sources to solve really complex issues.
+   - YOU CANNOT CALL A PRP DONE WITH TESTS FAILING. YOU HAVE TO FIX THEM ALL ALWAYS. THIS IS A MUST HAVE. NO OTHER WAY ALLOWED.
+   - If in the middle of the process you auto compact the context, after compactation you must read the current prp file on /PRPs/{{$ARGUMENTS}}.md file refresh again the plan and compare against your current progress.
+
    **Keep a Log of every step of the plan executed***
    - While executing the plan, kep a log on a file called  /PRPs/{{$ARGUMENTS}}-execution-log.md
-   - Every learning point, or command that you tired and worked, keep it on the execution-log so you can re use this strategy again.
+   - Every learning point, or command that you tried and worked, keep it on the execution-log so you can re-use this strategy again.
+   - Make sure you document every learning that you acquired by fixing a critical issue or test. This document should be full of golden nuggets that any developer working inside the repository will find ivaluable to fix known bugs or issues.
+   - Include example code snippets for further reference, as well as relative files path inside the current repository that contain that golden nuggets or code examples for future example.
+   - Review this execution log as often as possible when you detect a learning change. If in the process you have a regression on tests and then as a consequence you have a changed a solution, make sure you go back to the execution log and update all necessary entries so your solutions golden nuggets are up to date with the execution.
+   - Also SUPER IMPORTANT: Make sure you document on the execution log any Internet Sources That Helped Find any fix or breakthrough. 
    - Execute every step so after an interruption you can go back to this file /PRPs/{{$ARGUMENTS}}-execution-log.md, and learn where you are against the plan.
 
 

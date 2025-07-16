@@ -13,27 +13,41 @@ class GoogleTokenVerifier
     end
 
     auth_header = request.get_header('HTTP_AUTHORIZATION')
-    unless auth_header
-      return unauthorized_response
+    
+    # Handle missing, empty, or malformed authorization headers
+    if auth_header.nil? || auth_header.strip.empty? || !auth_header.include?(' ')
+      return @app.call(env) # Let ApplicationController handle missing/empty auth
     end
 
     token = auth_header.split(' ').last
 
+    # Check if this looks like a JWT token (has 3 parts separated by dots)
+    # JWT tokens have format: header.payload.signature
+    if is_jwt_token?(token)
+      # Skip Google verification for JWT tokens, let ApplicationController handle it
+      return @app.call(env)
+    end
+
     begin
       payload = verify_token(token)
-      puts "response payload: #{payload.inspect}"
       env['google_user'] = payload
       @app.call(env)
     rescue Google::Auth::IDTokens::VerificationError
-      unauthorized_response
+      # Let ApplicationController handle the authentication failure
+      @app.call(env)
     end
   end
 
   private
 
+  def is_jwt_token?(token)
+    # JWT tokens have exactly 3 parts separated by dots: header.payload.signature
+    return false if token.nil? || token.empty?
+    token.split('.').length == 3
+  end
+
   def verify_token(token)
     client_id = ENV['GOOGLE_CLIENT_ID']
-    puts "verifying token with client ID: #{client_id}"
     Google::Auth::IDTokens.verify_oidc(token, aud: client_id)
   end
 

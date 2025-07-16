@@ -87,11 +87,14 @@ class PostsController < ApplicationController
   private
 
     def set_post
-      @post = Post.find(params[:id])
+      # Bypass tenant scoping for authorization to work properly
+      # This allows Pundit policies to handle cross-tenant access denials (403)
+      # instead of getting RecordNotFound (404) from scoped queries
+      @post = ActsAsTenant.without_tenant { Post.find(params[:id]) }
     end
 
     def post_params
-      params.require(:post).permit(:post_id, :hash_id, :source, :metadata, :filename)
+      params.require(:post).permit(:post_id, :hash_id, :source, :metadata, :filename, :content)
     end
 
     def all_posts

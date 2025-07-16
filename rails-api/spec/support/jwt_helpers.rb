@@ -2,9 +2,9 @@
 module JwtHelpers
   def generate_jwt_token(user)
     payload = {
-      sub: user.id,
+      user_id: user.id,
       organization_id: user.organization_id,
-      role: user.role,
+      email: user.email,
       jti: user.jti,
       iat: Time.current.to_i,
       exp: 24.hours.from_now.to_i
@@ -55,9 +55,9 @@ module JwtHelpers
 
   def create_expired_jwt_token(user)
     payload = {
-      sub: user.id,
+      user_id: user.id,
       organization_id: user.organization_id,
-      role: user.role,
+      email: user.email,
       jti: user.jti,
       iat: 2.hours.ago.to_i,
       exp: 1.hour.ago.to_i # Expired
@@ -67,14 +67,22 @@ module JwtHelpers
 
   def create_invalid_jwt_token
     payload = {
-      sub: 999999,
+      user_id: 999999,
       organization_id: 999999,
-      role: 'admin',
+      email: 'invalid@example.com',
       jti: SecureRandom.uuid,
       iat: Time.current.to_i,
       exp: 24.hours.from_now.to_i
     }
     JWT.encode(payload, 'wrong_secret_key')
+  end
+  
+  private
+  
+  def jwt_secret_key
+    Rails.application.credentials.devise_jwt_secret_key || 
+    Rails.application.credentials.secret_key_base || 
+    ENV['SECRET_KEY_BASE']
   end
 end
 

@@ -4,7 +4,7 @@ class UserSerializer < ActiveModel::Serializer
              :role, :created_at, :updated_at
   
   belongs_to :organization, if: :include_organization?
-  has_one :professional_profile, if: :is_professional?
+  # has_one :professional_profile, if: :is_professional?  # Disabled - association doesn't exist yet
   
   def full_name
     object.full_name

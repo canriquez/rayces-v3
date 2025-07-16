@@ -20,7 +20,7 @@ class Api::V1::OrganizationsController < Api::V1::BaseController
   private
   
   def set_organization
-    @organization = current_user.organization
+    @organization = current_user&.organization
   end
   
   def organization_params

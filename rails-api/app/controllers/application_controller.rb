@@ -3,8 +3,8 @@ class ApplicationController < ActionController::API
   include RackSessionFix
   
   # Multi-tenancy and authentication
-  before_action :resolve_tenant_context, unless: :skip_tenant_in_tests?
   before_action :authenticate_user_flexible
+  before_action :resolve_tenant_context, unless: :skip_tenant_in_tests?
   before_action :validate_tenant_access, unless: :skip_tenant_in_tests?
   
   # Error handling
@@ -27,8 +27,8 @@ class ApplicationController < ActionController::API
   end
   
   def jwt_token_present?
-    request.headers['Authorization'].present? && 
-    request.headers['Authorization'].start_with?('Bearer ')
+    auth_header = request.headers['Authorization']
+    auth_header.present? && auth_header.strip.present? && auth_header.start_with?('Bearer ')
   end
   
   def google_user_present?
@@ -36,22 +36,31 @@ class ApplicationController < ActionController::API
   end
   
   def authenticate_with_jwt
-    token = request.headers['Authorization'].split(' ').last
+    auth_header = request.headers['Authorization']
+    
+    # Handle empty or missing authorization header
+    if auth_header.blank? || auth_header.strip.blank? || !auth_header.include?(' ')
+      render_unauthorized
+      return
+    end
+    
+    token = auth_header.split(' ').last
     jwt_payload = decode_jwt_token(token)
     
     if jwt_payload
       # CRITICAL: JWT payload uses 'user_id' not 'sub'
-      @current_user = User.find(jwt_payload['user_id'])
-      # Ensure tenant context matches JWT payload
-      if jwt_payload['organization_id'] && 
-         ActsAsTenant.current_tenant&.id != jwt_payload['organization_id']
-        render_forbidden("Invalid organization access")
-        return
-      end
+      user_id = jwt_payload['user_id']
+      # Bypass tenant scoping for user lookup during authentication
+      @current_user = ActsAsTenant.without_tenant { User.find(user_id) }
+      
+      # Store JWT organization for later validation in resolve_tenant_context
+      @jwt_organization_id = jwt_payload['organization_id']
     else
       render_unauthorized
     end
-  rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+  rescue JWT::DecodeError => e
+    render_unauthorized
+  rescue ActiveRecord::RecordNotFound => e
     render_unauthorized
   end
 
@@ -70,11 +79,12 @@ class ApplicationController < ActionController::API
   def decode_jwt_token(token)
     JWT.decode(
       token,
-      Rails.application.credentials.devise_jwt_secret_key || Rails.application.credentials.secret_key_base,
+      jwt_secret_key,
       true,
       algorithm: 'HS256'
     ).first
-  rescue
+  rescue JWT::DecodeError => e
+    Rails.logger.error "JWT decode error: #{e.message}"
     nil
   end
   
@@ -146,6 +156,13 @@ class ApplicationController < ActionController::API
   def validate_tenant_access
     return unless ActsAsTenant.current_tenant && current_user
     
+    # Validate JWT organization matches resolved tenant
+    if @jwt_organization_id && ActsAsTenant.current_tenant.id != @jwt_organization_id
+      Rails.logger.warn "[JWT] Organization mismatch: JWT=#{@jwt_organization_id}, Current=#{ActsAsTenant.current_tenant.id}"
+      render_forbidden("Invalid organization access")
+      return
+    end
+    
     # Ensure user belongs to the resolved tenant
     unless current_user.can_access_organization?(ActsAsTenant.current_tenant)
       Rails.logger.warn "[TENANT] Access denied: User #{current_user.id} cannot access organization #{ActsAsTenant.current_tenant.id}"
@@ -182,6 +199,10 @@ class ApplicationController < ActionController::API
     # CRITICAL: Must return UserContext with current organization context
     organization = current_organization || current_user.organization
     UserContext.new(current_user, organization)
+  end
+  
+  def current_organization
+    @current_organization ||= ActsAsTenant.current_tenant || current_user&.organization
   end
 
   def skip_tenant_in_tests?
@@ -273,5 +294,11 @@ class ApplicationController < ActionController::API
       error: 'Validation failed',
       errors: exception.record.errors.full_messages
     }, status: :unprocessable_entity
+  end
+  
+  def jwt_secret_key
+    Rails.application.credentials.devise_jwt_secret_key || 
+    Rails.application.credentials.secret_key_base || 
+    ENV['SECRET_KEY_BASE']
   end
 end
