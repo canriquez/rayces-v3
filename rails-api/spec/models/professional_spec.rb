@@ -37,7 +37,7 @@ RSpec.describe Professional, type: :model do
     end
   end
 
-  describe 'availability methods', :pending do
+  describe 'availability methods' do
     let(:professional) { create(:professional) }
 
     describe '#available_on?' do
@@ -56,35 +56,35 @@ RSpec.describe Professional, type: :model do
     describe '#available_at?' do
       it 'returns true for times within availability' do
         # NOTE: Method not implemented yet
-        monday_10am = next_weekday('monday').change(hour: 10, minute: 0)
+        monday_10am = next_weekday('monday').to_time.change(hour: 10, min: 0)
         expect(professional.available_at?(monday_10am)).to be_truthy
       end
 
       it 'returns false for times outside availability' do
-        monday_6am = next_weekday('monday').change(hour: 6, minute: 0)
-        monday_8pm = next_weekday('monday').change(hour: 20, minute: 0)
+        monday_6am = next_weekday('monday').to_time.change(hour: 6, min: 0)
+        monday_8pm = next_weekday('monday').to_time.change(hour: 20, min: 0)
         
         expect(professional.available_at?(monday_6am)).to be_falsy
         expect(professional.available_at?(monday_8pm)).to be_falsy
       end
 
       it 'returns false for unavailable days' do
-        saturday_10am = next_weekday('saturday').change(hour: 10, minute: 0)
+        saturday_10am = next_weekday('saturday').to_time.change(hour: 10, min: 0)
         expect(professional.available_at?(saturday_10am)).to be_falsy
       end
     end
   end
 
-  describe 'appointment conflicts', :pending do
+  describe 'appointment conflicts' do
     let(:professional) { create(:professional) }
     let(:client) { create(:user, :guardian, organization: professional.organization) }
 
     describe '#has_conflicting_appointment?' do
-      let(:appointment_time) { next_weekday('monday').change(hour: 10, minute: 0) }
+      let(:appointment_time) { next_weekday('monday').to_time.change(hour: 10, min: 0) }
 
       before do
         create(:appointment, :confirmed,
-          professional: professional,
+          professional: professional.user,
           client: client,
           organization: professional.organization,
           scheduled_at: appointment_time,
@@ -108,7 +108,7 @@ RSpec.describe Professional, type: :model do
 
       it 'ignores draft appointments for conflicts' do
         create(:appointment, :draft,
-          professional: professional,
+          professional: professional.user,
           client: client,
           organization: professional.organization,
           scheduled_at: appointment_time + 2.hours,
@@ -121,7 +121,7 @@ RSpec.describe Professional, type: :model do
 
       it 'ignores cancelled appointments for conflicts' do
         create(:appointment, :cancelled,
-          professional: professional,
+          professional: professional.user,
           client: client,
           organization: professional.organization,
           scheduled_at: appointment_time + 3.hours,

@@ -192,7 +192,7 @@ RSpec.describe Appointment, type: :model do
       expect(past_appointment.errors[:scheduled_at]).to include("must be in the future")
     end
 
-    it 'validates professional availability', :pending do
+    it 'validates professional availability' do
       # NOTE: Professional availability validation is not yet implemented
       # Create appointment on Sunday (not in availability)
       sunday_appointment = build(:appointment,
@@ -253,13 +253,13 @@ RSpec.describe Appointment, type: :model do
     today = Date.current
     days_until_monday = (1 - today.wday) % 7
     days_until_monday = 7 if days_until_monday == 0 # If today is Monday, get next Monday
-    (today + days_until_monday.days).change(hour: 10, minute: 0)
+    (today + days_until_monday.days).to_time.change(hour: 10, min: 0)
   end
 
   def next_sunday_at_10am
     today = Date.current
     days_until_sunday = (7 - today.wday) % 7
     days_until_sunday = 7 if days_until_sunday == 0 # If today is Sunday, get next Sunday
-    (today + days_until_sunday.days).change(hour: 10, minute: 0)
+    (today + days_until_sunday.days).to_time.change(hour: 10, min: 0)
   end
 end

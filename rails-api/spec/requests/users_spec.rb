@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Users", type: :request do
-  describe "GET /index" do
-    pending "add some examples (or delete) #{__FILE__}"
-  end
+  # Users API endpoints not implemented in current scope
+  # This spec file can be expanded when user management features are added
 end

@@ -5,7 +5,7 @@ RSpec.describe AppointmentReminderWorker, type: :worker do
   # is tightly coupled with multi-tenancy logic (SCRUM-33). Tests marked as pending
   # until core Sidekiq functionality can be decoupled from tenant-specific logic.
   
-  before(:all) { skip "Worker implementation needs decoupling from multi-tenancy for SCRUM-32" }
+  # Worker tests enabled
   let(:organization) { create(:organization) }
   let(:professional_user) { create(:user, :professional, organization: organization) }
   let(:professional) { create(:professional, user: professional_user, organization: organization) }
@@ -14,33 +14,67 @@ RSpec.describe AppointmentReminderWorker, type: :worker do
 
   describe '#perform' do
     context 'when appointment exists and is still pre_confirmed' do
-      it 'cancels the appointment after 24 hours' do
-        expect(appointment.pre_confirmed?).to be_truthy
-        
-        # Simulate the worker running after 24 hours
-        AppointmentReminderWorker.new.perform(appointment.id)
-        
-        appointment.reload
-        expect(appointment.cancelled?).to be_truthy
-        # Note: automatic cancellation implementation varies - test state change
-        expect(appointment.cancelled?).to be_truthy
+      context 'when appointment is older than 24 hours' do
+        before do
+          # Create appointment 25 hours ago
+          appointment.update_columns(created_at: 25.hours.ago)
+        end
+
+        it 'cancels the appointment after 24 hours' do
+          expect(appointment.pre_confirmed?).to be_truthy
+          
+          AppointmentReminderWorker.new.perform(appointment.id)
+          
+          appointment.reload
+          expect(appointment.cancelled?).to be_truthy
+        end
+
+        it 'sends cancellation notification' do
+          # The appointment model sends cancellation notifications
+          expect(EmailNotificationWorker).to receive(:perform_async).with(
+            appointment.professional_id,
+            'appointment_cancelled',
+            { 'appointment_id' => appointment.id }
+          )
+          expect(EmailNotificationWorker).to receive(:perform_async).with(
+            appointment.client_id,
+            'appointment_cancelled',
+            { 'appointment_id' => appointment.id }
+          )
+          # The worker sends expiration notification
+          expect(EmailNotificationWorker).to receive(:perform_async).with(
+            appointment.client_id,
+            'appointment_expired',
+            { 'appointment_id' => appointment.id }
+          )
+          
+          AppointmentReminderWorker.new.perform(appointment.id)
+        end
+
+        it 'logs the automatic cancellation' do
+          worker = AppointmentReminderWorker.new
+          expect(worker.logger).to receive(:info).with(
+            /\[AppointmentReminderWorker\] Expiring pre-confirmed appointment #{appointment.id}/
+          )
+          
+          worker.perform(appointment.id)
+        end
       end
 
-      it 'sends cancellation notification' do
-        expect(EmailNotificationWorker).to receive(:perform_async).with(
-          'appointment_auto_cancelled', appointment.id
-        )
-        
-        AppointmentReminderWorker.new.perform(appointment.id)
-      end
+      context 'when appointment is less than 24 hours old' do
+        it 'sends reminder notification' do
+          expect(EmailNotificationWorker).to receive(:perform_async).with(
+            appointment.client_id,
+            'appointment_confirmation_reminder',
+            { 'appointment_id' => appointment.id }
+          )
+          
+          AppointmentReminderWorker.new.perform(appointment.id)
+        end
 
-      it 'logs the automatic cancellation' do
-        expect(Rails.logger).to receive(:info).with(
-          /Expiring pre-confirmed appointment #{appointment.id}/
-        )
-        
-        # Travel to make appointment older than 24 hours
-        travel_to(25.hours.from_now) do
+        it 'reschedules the check' do
+          expect(AppointmentReminderWorker).to receive(:perform_in)
+          
           AppointmentReminderWorker.new.perform(appointment.id)
         end
       end
@@ -80,12 +114,13 @@ RSpec.describe AppointmentReminderWorker, type: :worker do
 
     context 'when appointment does not exist' do
       it 'handles missing appointment gracefully' do
-        expect(Rails.logger).to receive(:warn).with(
+        worker = AppointmentReminderWorker.new
+        expect(worker.logger).to receive(:warn).with(
           "Appointment with id 999999 not found for reminder worker"
         )
         
         expect {
-          AppointmentReminderWorker.new.perform(999999)
+          worker.perform(999999)
         }.not_to raise_error
       end
     end
@@ -142,16 +177,25 @@ RSpec.describe AppointmentReminderWorker, type: :worker do
 
   describe 'error handling' do
     it 'handles AASM transition errors gracefully' do
-      # Simulate an appointment that can't be cancelled
+      # Create appointment 25 hours ago so it will attempt to cancel
+      appointment.update_columns(created_at: 25.hours.ago)
+      
+      # Mock the appointment to not allow cancellation
       allow_any_instance_of(Appointment).to receive(:may_cancel?).and_return(false)
       
-      expect(Rails.logger).to receive(:error).with(
-        /Failed to cancel appointment #{appointment.id}/
+      worker = AppointmentReminderWorker.new
+      expect(worker.logger).to receive(:error).with(
+        /\[AppointmentReminderWorker\] Cannot cancel appointment #{appointment.id} - invalid state transition/
       )
       
+      # Worker should complete without raising error
       expect {
-        AppointmentReminderWorker.new.perform(appointment.id)
+        worker.perform(appointment.id)
       }.not_to raise_error
+      
+      # Appointment should remain in pre_confirmed state
+      appointment.reload
+      expect(appointment.pre_confirmed?).to be_truthy
     end
 
     it 'handles database errors gracefully' do
@@ -165,7 +209,7 @@ RSpec.describe AppointmentReminderWorker, type: :worker do
 
   describe 'scheduling' do
     # Mark as pending since AASM callbacks with Sidekiq scheduling are part of multi-tenancy implementation (SCRUM-33)
-    it 'is scheduled when appointment transitions to pre_confirmed', :skip do
+    it 'is scheduled when appointment transitions to pre_confirmed' do
       draft_appointment = create(:appointment, :draft, professional: professional_user, client: parent, organization: organization)
       
       expect(AppointmentReminderWorker).to receive(:perform_in).with(24.hours, draft_appointment.id)

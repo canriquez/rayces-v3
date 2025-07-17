@@ -40,13 +40,15 @@ RSpec.describe UserPolicy, type: :policy do
       end
     end
 
-    it 'returns only users from the same organization', :pending do
+    it 'returns only users from the same organization' do
       # NOTE: Multi-tenancy scoping belongs to SCRUM-33, not SCRUM-32
-      user_context = UserContext.new(admin_user, organization)
-      scope = UserPolicy::Scope.new(user_context, User).resolve
-      
-      expect(scope).to include(@user1, @user2)
-      expect(scope).not_to include(@other_user)
+      ActsAsTenant.without_tenant do
+        user_context = UserContext.new(admin_user, organization)
+        scope = UserPolicy::Scope.new(user_context, User).resolve
+        
+        expect(scope).to include(@user1, @user2)
+        expect(scope).not_to include(@other_user)
+      end
     end
   end
 

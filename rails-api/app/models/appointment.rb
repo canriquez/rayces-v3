@@ -24,6 +24,7 @@ class Appointment < ApplicationRecord
   validate :scheduled_in_future, on: :create
   validate :professional_available
   validate :no_overlapping_appointments
+  validate :student_age_appropriate
   
   # Scopes
   scope :upcoming, -> { where('scheduled_at > ?', Time.current).order(:scheduled_at) }
@@ -105,9 +106,21 @@ class Appointment < ApplicationRecord
   end
   
   def professional_available
-    # Check if professional is available at this time
-    # This would check against their availability schedule
-    # Implementation depends on availability model
+    return unless professional && scheduled_at
+    
+    # Get the Professional model instance
+    professional_model = Professional.find_by(user_id: professional_id, organization_id: organization_id)
+    return unless professional_model
+    
+    # Check if professional is available at the scheduled time
+    unless professional_model.available_at?(scheduled_at)
+      errors.add(:scheduled_at, 'Professional is not available at this time')
+    end
+    
+    # Check for conflicting appointments
+    if professional_model.has_conflicting_appointment?(scheduled_at, duration_minutes)
+      errors.add(:scheduled_at, 'Professional has a conflicting appointment')
+    end
   end
   
   def no_overlapping_appointments
@@ -125,6 +138,14 @@ class Appointment < ApplicationRecord
     
     if overlapping.exists?
       errors.add(:scheduled_at, "conflicts with another appointment")
+    end
+  end
+  
+  def student_age_appropriate
+    return unless student
+    
+    if student.age && student.age < 3
+      errors.add(:student, 'must be at least 3 years old')
     end
   end
   

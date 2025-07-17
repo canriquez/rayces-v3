@@ -41,7 +41,9 @@ class EmailNotificationWorker < ApplicationWorker
   def send_appointment_reminder(user, params)
     # In a real application, this would use ActionMailer
     # For now, we'll just log the action
-    appointment = Appointment.find(params['appointment_id'])
+    appointment = find_appointment(params['appointment_id'])
+    return unless appointment
+    
     log_info("Would send appointment reminder email to #{user.email} for appointment #{appointment.id}")
     
     # Example ActionMailer call (when implemented):
@@ -49,18 +51,31 @@ class EmailNotificationWorker < ApplicationWorker
   end
   
   def send_appointment_confirmed(user, params)
-    appointment = Appointment.find(params['appointment_id'])
+    appointment = find_appointment(params['appointment_id'])
+    return unless appointment
+    
     log_info("Would send appointment confirmation email to #{user.email} for appointment #{appointment.id}")
   end
   
   def send_appointment_expired(user, params)
-    appointment = Appointment.find(params['appointment_id'])
+    appointment = find_appointment(params['appointment_id'])
+    return unless appointment
+    
     log_info("Would send appointment expiration email to #{user.email} for appointment #{appointment.id}")
   end
   
   def send_appointment_cancelled(user, params)
-    appointment = Appointment.find(params['appointment_id'])
+    appointment = find_appointment(params['appointment_id'])
+    return unless appointment
+    
     log_info("Would send appointment cancellation email to #{user.email} for appointment #{appointment.id}")
+  end
+  
+  def find_appointment(appointment_id)
+    Appointment.find(appointment_id)
+  rescue ActiveRecord::RecordNotFound
+    log_error("Appointment with id #{appointment_id} not found")
+    nil
   end
   
   def send_welcome_email(user, params)

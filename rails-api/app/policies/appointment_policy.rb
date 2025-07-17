@@ -41,7 +41,7 @@ class AppointmentPolicy < ApplicationPolicy
   
   def destroy?
     # Only draft appointments can be destroyed, and only by admins and staff
-    (admin? || staff?) && record.draft?
+    same_tenant? && (admin? || staff?) && record.draft?
   end
   
   # State transition policies
@@ -50,7 +50,12 @@ class AppointmentPolicy < ApplicationPolicy
   end
   
   def confirm?
-    same_tenant? && (admin? || staff? || record.professional_id == user.id)
+    same_tenant? && (
+      admin? || 
+      staff? || 
+      record.professional_id == user.id ||
+      record.client_id == user.id  # Clients can confirm their own appointments
+    )
   end
   
   def execute?
@@ -79,16 +84,18 @@ class AppointmentPolicy < ApplicationPolicy
     def resolve
       appointments = tenant_scope
       
-      case user.role
-      when 'admin', 'staff'
+      # Get the actual user object (UserContext wraps the user)
+      actual_user = user.respond_to?(:user) ? user.user : user
+      
+      if actual_user.admin? || actual_user.staff?
         # Can see all appointments in organization
         appointments
-      when 'professional'
+      elsif actual_user.professional?
         # Can see their own appointments
-        appointments.where(professional_id: user.id)
-      when 'parent'
+        appointments.where(professional_id: actual_user.id)
+      elsif actual_user.guardian? || actual_user.parent?
         # Can see appointments they booked
-        appointments.where(client_id: user.id)
+        appointments.where(client_id: actual_user.id)
       else
         appointments.none
       end

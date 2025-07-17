@@ -8,7 +8,8 @@ class AppointmentSerializer < ActiveModel::Serializer
   belongs_to :client, serializer: UserSerializer  
   belongs_to :student, if: :has_student?
   
-  attributes :cancellation_reason, :cancelled_at, if: :is_cancelled?
+  attribute :cancellation_reason, if: :is_cancelled?
+  attribute :cancelled_at, if: :is_cancelled?
   belongs_to :cancelled_by, serializer: UserSerializer, if: :is_cancelled?
   
   def ends_at
@@ -31,12 +32,6 @@ class AppointmentSerializer < ActiveModel::Serializer
     object.notes if can_view_notes?
   end
   
-  private
-  
-  def current_user
-    instance_options[:current_user] || scope
-  end
-  
   def can_view_sensitive_info?
     return true unless current_user
     
@@ -52,5 +47,11 @@ class AppointmentSerializer < ActiveModel::Serializer
     
     # Only professionals involved and admins can view notes
     current_user.admin? || object.professional_id == current_user.id
+  end
+  
+  private
+  
+  def current_user
+    instance_options[:current_user] || scope
   end
 end

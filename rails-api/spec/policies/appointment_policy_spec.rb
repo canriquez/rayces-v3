@@ -62,13 +62,15 @@ RSpec.describe AppointmentPolicy, type: :policy do
       end
     end
 
-    it 'returns appointments for user organization only', :pending do
+    it 'returns appointments for user organization only' do
       # NOTE: Multi-tenancy scoping belongs to SCRUM-33, not SCRUM-32
-      user_context = UserContext.new(admin_user, organization)
-      scope = AppointmentPolicy::Scope.new(user_context, Appointment).resolve
-      
-      expect(scope).to include(@appointment1, @appointment2)
-      expect(scope).not_to include(@other_appointment)
+      ActsAsTenant.without_tenant do
+        user_context = UserContext.new(admin_user, organization)
+        scope = AppointmentPolicy::Scope.new(user_context, Appointment).resolve
+        
+        expect(scope).to include(@appointment1, @appointment2)
+        expect(scope).not_to include(@other_appointment)
+      end
     end
   end
 
@@ -222,7 +224,7 @@ RSpec.describe AppointmentPolicy, type: :policy do
   describe 'multi-tenant security' do
     let(:other_org_appointment) { create(:appointment, organization: other_org) }
 
-    it 'prevents cross-tenant access for all operations', :pending do
+    it 'prevents cross-tenant access for all operations' do
       # NOTE: Multi-tenancy security belongs to SCRUM-33, not SCRUM-32
       user_context = UserContext.new(admin_user, organization)
       policy = AppointmentPolicy.new(user_context, other_org_appointment)

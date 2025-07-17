@@ -27,17 +27,34 @@ RSpec.describe ApplicationPolicy, type: :policy do
   describe 'Scope' do
     let(:user) { admin_user }
     
-    it 'includes tenant-scoped records for the user organization', :pending do
+    it 'includes tenant-scoped records for the user organization' do
       # NOTE: Multi-tenancy scoping belongs to SCRUM-33, not SCRUM-32
-      user1 = create(:user, organization: organization)
-      user2 = create(:user, organization: organization)
-      other_user = create(:user, organization: other_org)
+      user1 = nil
+      user2 = nil
+      other_user = nil
       
-      user_context = UserContext.new(user, organization)
-      scope = ApplicationPolicy::Scope.new(user_context, User).resolve
+      ActsAsTenant.with_tenant(organization) do
+        user1 = create(:user, organization: organization)
+        user2 = create(:user, organization: organization)
+      end
       
-      expect(scope).to include(user1, user2)
-      expect(scope).not_to include(other_user)
+      ActsAsTenant.with_tenant(other_org) do
+        other_user = create(:user, organization: other_org)
+      end
+      
+      # Clear any existing tenant context
+      ActsAsTenant.without_tenant do
+        user_context = UserContext.new(user, organization)
+        scope = ApplicationPolicy::Scope.new(user_context, User).resolve
+        
+        # Check which users belong to the organization
+        org_users = User.where(organization_id: organization.id)
+        
+        # Should include all users from the organization
+        expect(scope.pluck(:id).sort).to eq(org_users.pluck(:id).sort)
+        # Should not include users from other organizations
+        expect(scope.pluck(:organization_id).uniq).to eq([organization.id])
+      end
     end
   end
 

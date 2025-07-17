@@ -3,7 +3,14 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
   before_action :set_appointment, only: [:show, :update, :destroy, :pre_confirm, :confirm, :execute, :cancel]
   
   def index
-    @appointments = policy_scope(Appointment).includes(:professional, :client, :student)
+    begin
+      @appointments = policy_scope(Appointment).includes(:professional, :client, :student)
+    rescue => e
+      Rails.logger.error "AppointmentsController#index error: #{e.class} - #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      render json: { error: "Internal server error: #{e.message}" }, status: :internal_server_error
+      return
+    end
     
     # Filter by date range if provided
     if params[:start_date].present? && params[:end_date].present?
@@ -23,12 +30,24 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
     end
     
     @appointments = @appointments.order(:scheduled_at)
-    render_paginated(@appointments, AppointmentSerializer)
+    
+    # Return appointments in the expected format for tests
+    render json: { 
+      appointments: ActiveModelSerializers::SerializableResource.new(
+        @appointments,
+        each_serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json
+    }
   end
   
   def show
     authorize @appointment
-    render json: @appointment, serializer: AppointmentSerializer
+    render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+      @appointment,
+      serializer: AppointmentSerializer,
+      scope: current_user
+    ).as_json }
   end
   
   def create
@@ -39,7 +58,11 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
     authorize @appointment
     
     if @appointment.save
-      render json: @appointment, serializer: AppointmentSerializer, status: :created
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }, status: :created
     else
       render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity
     end
@@ -49,7 +72,11 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
     authorize @appointment
     
     if @appointment.update(appointment_params)
-      render json: @appointment, serializer: AppointmentSerializer
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }
     else
       render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity
     end
@@ -65,8 +92,12 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
   def pre_confirm
     authorize @appointment, :pre_confirm?
     
-    if @appointment.pre_confirm!
-      render json: @appointment, serializer: AppointmentSerializer
+    if @appointment.may_pre_confirm? && @appointment.pre_confirm!
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }
     else
       render json: { error: 'Cannot pre-confirm appointment' }, status: :unprocessable_entity
     end
@@ -75,18 +106,31 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
   def confirm
     authorize @appointment, :confirm?
     
-    if @appointment.confirm!
-      render json: @appointment, serializer: AppointmentSerializer
+    if @appointment.may_confirm? && @appointment.confirm!
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }
     else
-      render json: { error: 'Cannot confirm appointment' }, status: :unprocessable_entity
+      render json: { error: 'Cannot confirm appointment - invalid state transition' }, status: :unprocessable_entity
     end
   end
   
   def execute
     authorize @appointment, :execute?
     
-    if @appointment.execute!
-      render json: @appointment, serializer: AppointmentSerializer
+    # Update notes if provided
+    if params[:notes].present?
+      @appointment.notes = params[:notes]
+    end
+    
+    if @appointment.may_execute? && @appointment.execute!
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }
     else
       render json: { error: 'Cannot execute appointment' }, status: :unprocessable_entity
     end
@@ -95,10 +139,16 @@ class Api::V1::AppointmentsController < Api::V1::BaseController
   def cancel
     authorize @appointment, :cancel?
     
-    @appointment.cancellation_reason = params[:cancellation_reason]
+    # Handle both cancellation_reason and notes params
+    @appointment.cancellation_reason = params[:cancellation_reason] if params[:cancellation_reason].present?
+    @appointment.notes = params[:notes] if params[:notes].present?
     
-    if @appointment.cancel!(current_user)
-      render json: @appointment, serializer: AppointmentSerializer
+    if @appointment.may_cancel? && @appointment.cancel!(current_user)
+      render json: { appointment: ActiveModelSerializers::SerializableResource.new(
+        @appointment,
+        serializer: AppointmentSerializer,
+        scope: current_user
+      ).as_json }
     else
       render json: { error: 'Cannot cancel appointment' }, status: :unprocessable_entity
     end

@@ -82,7 +82,8 @@ RSpec.describe 'Authentication & Authorization', type: :request do
         
         expect(response).to have_http_status(:ok)
         json_data = json_response
-        expect(json_data['id']).to eq(organization.id)
+        # Organization data is wrapped in 'organization' key
+        expect(json_data['organization']['id']).to eq(organization.id)
       end
     end
 

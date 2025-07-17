@@ -33,13 +33,16 @@ Execute the requirements of a PRP file.
    - If in the middle of the process you auto compact the context, after compactation you must read the current prp file on /PRPs/{{$ARGUMENTS}}.md file refresh again the plan and compare against your current progress.
 
    **Keep a Log of every step of the plan executed***
-   - While executing the plan, kep a log on a file called  /PRPs/{{$ARGUMENTS}}-execution-log.md
-   - Every learning point, or command that you tried and worked, keep it on the execution-log so you can re-use this strategy again.
-   - Make sure you document every learning that you acquired by fixing a critical issue or test. This document should be full of golden nuggets that any developer working inside the repository will find ivaluable to fix known bugs or issues.
-   - Include example code snippets for further reference, as well as relative files path inside the current repository that contain that golden nuggets or code examples for future example.
-   - Review this execution log as often as possible when you detect a learning change. If in the process you have a regression on tests and then as a consequence you have a changed a solution, make sure you go back to the execution log and update all necessary entries so your solutions golden nuggets are up to date with the execution.
-   - Also SUPER IMPORTANT: Make sure you document on the execution log any Internet Sources That Helped Find any fix or breakthrough. 
-   - Execute every step so after an interruption you can go back to this file /PRPs/{{$ARGUMENTS}}-execution-log.md, and learn where you are against the plan.
+   You will maintain a real-time execution log. Follow these directives precisely:
+
+   - Log File: Create and continuously update the log at /PRPs/{{$ARGUMENTS}}-execution-log.md.
+   - Template: Strictly follow the template at PRPs/templates/prp-execution-log.md.
+   - Content: Your log must include:
+      - All working commands and strategies.
+      - "Gold Nuggets": Key learnings and best practices for every fix.
+      - Evidence: Code snippets, file paths, and URLs to any external sources that helped.
+   - Updates: The log is a living document. If a solution changes (e.g., due to a regression), you must go back and update the log entry to reflect the final, working solution.
+   - Purpose: Ensure the log is always detailed enough to serve as a perfect checkpoint, allowing work to resume with full context after any interruption.
 
 
 4. **Validate**

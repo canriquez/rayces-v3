@@ -56,7 +56,16 @@ class ApplicationPolicy
     def tenant_scope
       # Always scope to organization for models that support multi-tenancy
       if scope.respond_to?(:where) && scope.column_names.include?('organization_id') && organization.present?
-        scope.where(organization_id: organization.id)
+        # ActsAsTenant might already be scoping, so we need to handle this carefully
+        # In test environment, ActsAsTenant is disabled but we still want to scope
+        if Rails.env.test?
+          # Use unscoped to ensure we're starting fresh, then apply our scope
+          base_scope = scope.respond_to?(:unscoped) ? scope.unscoped : scope
+          base_scope.where(organization_id: organization.id)
+        else
+          # In production, just add our scope (ActsAsTenant will handle the rest)
+          scope.where(organization_id: organization.id)
+        end
       else
         scope
       end

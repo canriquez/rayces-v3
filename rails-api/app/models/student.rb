@@ -75,6 +75,8 @@ class Student < ApplicationRecord
       errors.add(:date_of_birth, "cannot be in the future")
     elsif date_of_birth.present? && age > 100
       errors.add(:date_of_birth, "seems incorrect (age over 100)")
+    elsif date_of_birth.present? && age > 18
+      errors.add(:date_of_birth, "student cannot be older than 18 years")
     end
   end
   

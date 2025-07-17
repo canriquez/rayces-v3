@@ -5,8 +5,10 @@ class StudentSerializer < ActiveModel::Serializer
   
   belongs_to :parent, serializer: UserSerializer
   
-  attributes :age, if: :can_calculate_age?
-  attributes :medical_notes, :educational_notes, :emergency_contacts, if: :can_view_private_info?
+  attribute :age, if: :can_calculate_age?
+  attribute :medical_notes, if: :can_view_private_info?
+  attribute :educational_notes, if: :can_view_private_info?
+  attribute :emergency_contacts, if: :can_view_private_info?
   
   def full_name
     object.full_name
@@ -20,12 +22,6 @@ class StudentSerializer < ActiveModel::Serializer
     object.date_of_birth.present?
   end
   
-  private
-  
-  def current_user
-    instance_options[:current_user] || scope
-  end
-  
   def can_view_private_info?
     return true unless current_user
     
@@ -33,6 +29,12 @@ class StudentSerializer < ActiveModel::Serializer
     current_user.admin? || 
     current_user.staff? || 
     object.parent_id == current_user.id ||
-    (current_user.professional? && object.appointments.joins(:professional).where(professionals: { user_id: current_user.id }).exists?)
+    (current_user.professional? && object.appointments.where(professional_id: current_user.id).exists?)
+  end
+  
+  private
+  
+  def current_user
+    instance_options[:current_user] || scope
   end
 end

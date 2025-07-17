@@ -3,7 +3,7 @@ class AppointmentReminderWorker < ApplicationWorker
   sidekiq_options queue: 'critical', retry: 5
   
   def perform(appointment_id)
-    with_error_handling do
+    begin
       appointment = Appointment.find(appointment_id)
       
       # Ensure we're in the correct tenant context (only if acts_as_tenant is enabled)
@@ -14,6 +14,9 @@ class AppointmentReminderWorker < ApplicationWorker
           process_appointment(appointment, appointment_id)
         end
       end
+    rescue ActiveRecord::RecordNotFound
+      logger.warn "Appointment with id #{appointment_id} not found for reminder worker"
+      return
     end
   end
 
@@ -26,14 +29,19 @@ class AppointmentReminderWorker < ApplicationWorker
     # Check if 24 hours have passed without confirmation
     if appointment.created_at < 24.hours.ago
       log_info("Expiring pre-confirmed appointment #{appointment_id}")
-      appointment.cancel!
       
-      # Notify client about expiration
-      EmailNotificationWorker.perform_async(
-        appointment.client_id,
-        'appointment_expired',
-        { appointment_id: appointment_id }
-      )
+      if appointment.may_cancel?
+        appointment.cancel!
+        
+        # Notify client about expiration
+        EmailNotificationWorker.perform_async(
+          appointment.client_id,
+          'appointment_expired',
+          { 'appointment_id' => appointment_id }
+        )
+      else
+        log_error("Cannot cancel appointment #{appointment_id} - invalid state transition")
+      end
     else
       # Send reminder notification
       log_info("Sending reminder for appointment #{appointment_id}")
@@ -42,7 +50,7 @@ class AppointmentReminderWorker < ApplicationWorker
       EmailNotificationWorker.perform_async(
         appointment.client_id,
         'appointment_confirmation_reminder',
-        { appointment_id: appointment_id }
+        { 'appointment_id' => appointment_id }
       )
       
       # Reschedule check for later

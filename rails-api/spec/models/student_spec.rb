@@ -137,12 +137,16 @@ RSpec.describe Student, type: :model do
         organization: student.organization
       )
       
+      # Schedule appointment during professional's availability (Monday 10am)
+      next_monday = Date.today.beginning_of_week(:monday) + 1.week
+      scheduled_time = next_monday.to_time.change(hour: 10, min: 0)
+      
       appointment2 = create(:appointment,
         student: student,
         professional: professional.user,
         client: student.parent,
         organization: student.organization,
-        scheduled_at: 1.week.from_now
+        scheduled_at: scheduled_time
       )
 
       expect(student.appointments).to include(appointment1, appointment2)
@@ -179,7 +183,7 @@ RSpec.describe Student, type: :model do
       expect(future_student.errors[:date_of_birth]).to include("cannot be in the future")
     end
 
-    it 'validates reasonable age ranges', :pending do
+    it 'validates reasonable age ranges' do
       # NOTE: Age range validation not yet implemented
       too_old_student = build(:student, date_of_birth: 30.years.ago)
       expect(too_old_student).not_to be_valid
