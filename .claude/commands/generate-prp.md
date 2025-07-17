@@ -9,10 +9,11 @@ The AI agent only gets the context you are appending to the PRP and training dat
 ## Research Process
 
 1. **Previous PRP Results Review**
-   - Check for existing `$ARGUMENTS-results.md` file in PRPs directory
+   - Check for existing `/PRPs/*-results.md` files as well as `/PRPs/*-execution-logs.md` in PRPs directory to quickly learn about the latest progress within the repository after execution of previous scrum PRPs.
    - Review any related PRP results files for context and dependencies
    - Identify completed work that can be built upon
    - Note any pending items or blockers from previous implementations
+   - Note that some of the scrum issues might have part of its descriptions outdated, so include always a step trying to verify the tasks to be executed as some of them might be already implemented. If that is the case use the current MCPs to update the github issue and the Jira and Confluence documentation as well with what you just learned. This will ensure we have the project documentation up to date.
 
 2. **Codebase Analysis**
    - Search for similar features/patterns in the codebase
