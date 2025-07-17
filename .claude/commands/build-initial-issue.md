@@ -2,7 +2,7 @@ generete the INITIAL-{{$ARGUMENTS}}.md file by learning about the issue $ARGUMEN
 
 You will store the new file `INITIAL-{{$ARGUMENTS}}.md` inside the final location `issues/{{$ARGUMENTS}}/INITIAL-{{$ARGUMENTS}}.md` if the folders do not exist, you will create them so you can successfully add the final file in the right location.
 
-To complete the generation of this file, you will use all available and latest documentation conained already in the project folder, and also check inside jira and confluence for all related documentation material that you see necessary. You will seach using gh account inside the issues using the name of the issue and not the url. As an example, it might be that containst the string `{{$ARGUMENTS}}` inside its name is actually the issue located in the url `https://github.com/... .../2`, so be careful with this.
+To complete the generation of this file, you will use all available and latest documentation conained already in the project folder, and also check inside jira and confluence for all related documentation material that you see necessary. You pay special attention to the files included in the folder `/PRPs/*-execution-log.md` to learn about the latest PRPs executed with all the learnings. You will seach using gh account inside the issues using the name of the issue and not the url. As an example, it might be that containst the string `{{$ARGUMENTS}}` inside its name is actually the issue located in the url `https://github.com/... .../2`, so be careful with this.
 
 The file should have the following structure sections
 

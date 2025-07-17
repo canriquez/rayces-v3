@@ -7,6 +7,8 @@ class Professional < ApplicationRecord
   belongs_to :user
   has_many :appointments, foreign_key: 'professional_id', primary_key: 'user_id', dependent: :destroy
   has_many :students, through: :appointments
+  has_many :availability_rules, dependent: :destroy
+  has_many :time_slots, dependent: :destroy
   
   # Validations
   validates :organization, presence: true

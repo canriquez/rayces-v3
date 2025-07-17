@@ -10,6 +10,8 @@ class Appointment < ApplicationRecord
   belongs_to :client, class_name: 'User'
   belongs_to :student, optional: true
   belongs_to :cancelled_by, class_name: 'User', optional: true
+  has_many :credit_transactions, dependent: :restrict_with_error
+  has_one :time_slot, dependent: :nullify
   
   # Validations
   validates :organization, presence: true

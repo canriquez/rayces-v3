@@ -3,7 +3,7 @@
 Execute the requirements of a PRP file.
 
 ## PRP File: $ARGUMENTS
-3
+
 ## Execution Process
 
 1. **Load PRP**
@@ -28,6 +28,7 @@ Execute the requirements of a PRP file.
    **Execute the plan at all costs**
    - Always create comprehensive tests that test for happy path and common edge cases all the new logic and units that you are creating.
    - ALWAYS, ALWAYS make all the tests pass. For this you will need to adjust the logic and adjust the testing infrastructure if needed.
+   - When you fix a test or modify an application logoc code, make sure you review the complete file and clean up old comments that after the fix will just create confusion for the developer when reading the fixed code. Make sure you do this sanity check every time.
    - When finding a fix for a problem exaust all current ideas, PLEASe make sure you do a search on the intenet to look for ideas and related examples or solutions. This has proven in the past that provided great sources to solve really complex issues.
    - YOU CANNOT CALL A PRP DONE WITH TESTS FAILING. YOU HAVE TO FIX THEM ALL ALWAYS. THIS IS A MUST HAVE. NO OTHER WAY ALLOWED.
    - If in the middle of the process you auto compact the context, after compactation you must read the current prp file on /PRPs/{{$ARGUMENTS}}.md file refresh again the plan and compare against your current progress.

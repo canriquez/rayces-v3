@@ -49,16 +49,29 @@ Using PRPs/templates/prp_base.md as template:
 - Reference real files for patterns
 - Include error handling strategy
 - list tasks to be completed to fullfill the PRP in the order they should be completed
-- When possible plan tu run and pass all related tests for new implemented code before moving to the next relevant task. This will help you fix tests progressiveley, and not wait until the end.
+- When possible plan to run and pass all related tests for new implemented code before moving to the next relevant task. This will help you fix tests progressiveley, and not wait until the end.
+- Include ready to use scripts to run common actions like running tests, or runnig migrations, execute scripts, etc, for the current environment. You must become aware of how are basic things executed in the current environment. For this check the readme.md, .claude.md, changelog.md or even old prp execution files located inside `/PRPs/*-execution-log.md` as well as `/PRPs/*.md` files. All with the idea to extract key information that will help you execute your actions within the PRP under construction. Find below some examples of this instructions using rails code examples:
 
-### Validation Gates (Must be Executable) eg for python
+### Rails Example: Run Existing Migrations. example for Rails on a k8s / `skaffold dev` driven environment
 ```bash
-# Syntax/Style
-ruff check --fix && mypy .
+#  Check current migration status
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:migrate:status
 
-# Unit Tests
-uv run pytest tests/ -v
+# Run pending migrations
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:migrate
 
+#  Verify schema
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:schema:dump
+
+# Run all tests to ensure no regressions
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rspec
+
+# Check for migration-specific tests
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rspec spec/migrations/ --format documentation
+
+
+# Run Rubocop
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rubocop app/models/
 ```
 
 *** CRITICAL AFTER YOU ARE DONE RESEARCHING AND EXPLORING THE CODEBASE BEFORE YOU START WRITING THE PRP ***

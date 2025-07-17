@@ -22,6 +22,8 @@ class User < ApplicationRecord
   has_many :appointments_as_client, class_name: 'Appointment', foreign_key: 'client_id', dependent: :destroy
   has_one :professional_profile, class_name: 'Professional', dependent: :destroy
   has_many :students, foreign_key: 'parent_id', dependent: :destroy
+  has_one :credit_balance, dependent: :destroy
+  has_many :credit_transactions, through: :credit_balance
   
   # Role management associations
   has_many :user_roles, dependent: :destroy
