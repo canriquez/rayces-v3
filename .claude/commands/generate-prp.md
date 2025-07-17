@@ -14,6 +14,7 @@ The AI agent only gets the context you are appending to the PRP and training dat
    - Identify completed work that can be built upon
    - Note any pending items or blockers from previous implementations
    - Note that some of the scrum issues might have part of its descriptions outdated, so include always a step trying to verify the tasks to be executed as some of them might be already implemented. If that is the case use the current MCPs to update the github issue and the Jira and Confluence documentation as well with what you just learned. This will ensure we have the project documentation up to date.
+   - Only If you confirm that in deed the issue is completly done and you must close the issue, still generate the PRP file with the instruction to attemp update the documentation on jira, confluence and github. The PRP still need to complete the flow so we have all PRP files involved available in the repo and we do not have missing files (e.g. no prp file) explaining the complete picture of the progress. 
 
 2. **Codebase Analysis**
    - Search for similar features/patterns in the codebase
