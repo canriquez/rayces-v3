@@ -60,7 +60,6 @@ FactoryBot.define do
 
     trait :with_google_auth do
       uid { SecureRandom.uuid }
-      provider { "google_oauth2" }
     end
   end
 end
