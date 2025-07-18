@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- 2025-07-18 [Claude] nextjs/: Fixed Tailwind CSS v4 PostCSS configuration error by updating postcss.config.mjs to use '@tailwindcss/postcss' plugin instead of deprecated 'tailwindcss' plugin. Resolves Next.js build error when accessing localhost:8080.
+
 ### Changed
 - 2025-07-17 [Carlos Anriquez] **PROJECT STRATEGIC DECISION**: Timeline adjustment for MVP demo from July 18, 2025 to Early August 2025 (2-3 week postponement). Carlos Anriquez prioritized production-ready backend solution over demo-specific implementation to ensure robust, scalable foundation for full project scope rather than demo-only solution. Full implementation delivery maintained for August 31, 2025. Additional development window includes one week post July winter holidays in Salta (July 29 - August 5).
 - 2025-07-17 [Claude] **docs/**: Updated all critical Confluence documentation with strategic timeline adjustment: (1) Milestone Timeline page (66119) - revised critical dates with strategic decision rationale, (2) Epic & Story Tracking page (66001) - updated sprint progress and timeline impact analysis, (3) Project Plan page (262145) - comprehensive strategic decision documentation with production-first approach benefits, (4) Home page (65964) - stakeholder communication with revised timeline summary and project health dashboard. All pages updated with consistent messaging about production-ready backend prioritization over demo timeline.
