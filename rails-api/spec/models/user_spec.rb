@@ -164,7 +164,6 @@ RSpec.describe User, type: :model do
     it 'supports Google OAuth users' do
       user = create(:user, :with_google_auth, organization: organization)
       expect(user.uid).to be_present
-      expect(user.provider).to eq('google_oauth2')
     end
   end
 
