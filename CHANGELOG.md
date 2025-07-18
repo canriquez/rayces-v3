@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- 2025-07-18 [Claude] rails-api/: Fixed acts_as_tenant initializer to check if Organization model is defined before accessing it. Prevents NameError during rails db:create on fresh boots.
+- 2025-07-18 [Claude] rails-api/: Created BootGuard module in lib/boot_guard.rb to provide safe database and model availability checks during Rails boot. Refactored acts_as_tenant initializer to use BootGuard.model_ready? and BootGuard.when_ready for all database operations.
+- 2025-07-18 [Claude] rails-api/: Created test_fresh_boot.rb script in spec/scripts/ to verify Rails can boot from fresh state without initialization errors. Tests db:create, db:migrate, model loading, initializers, and server startup. Includes options for verbose output and skipping database drops.
+
 ### Added
 - 2025-07-17 [Claude] **PRPs/**: COMPLETED PRP-37 verification and documentation of Devise/JWT authentication implementation for SCRUM-37. Verified: (1) Implementation already complete with all acceptance criteria met, (2) User model tests passing (25/25), authentication tests passing (24/24), (3) JWT endpoints operational at /api/v1/login, /api/v1/logout, /api/v1/signup, (4) Multi-tenant context preserved in JWT payload with user_id, organization_id, role claims, (5) Google OAuth functionality maintained alongside JWT auth. Updated Confluence Epic tracking page with completion status. Created execution log and results documentation. Manual Jira update required due to API error.
 - 2025-07-17 [Cursor] **rails-api/**: VERIFIED SCRUM-37 Devise/JWT authentication already fully implemented. Confirmed: (1) User model includes Devise::JWT::RevocationStrategies::JTIMatcher with modules database_authenticatable, registerable, recoverable, rememberable, jwt_authenticatable, (2) JWT payload includes user_id, email, role, organization_id, jti claims, (3) Authentication endpoints operational at /api/v1/login, /api/v1/logout, /api/v1/signup via Users::SessionsController and Users::RegistrationsController, (4) Devise initializer configured with JWT settings including 24-hour token expiration, (5) All authentication tests passing (25 User model tests, 24 authentication tests, 0 failures). Updated GitHub issue #19 and closed as completed.
