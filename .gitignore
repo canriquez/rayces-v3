@@ -1,0 +1,17 @@
+# Environment files
+/k8s/.env
+
+# Mac OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*~
