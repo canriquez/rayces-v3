@@ -67,7 +67,7 @@ export const useCreateUser = (
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
       
       // Optionally set the new user data in cache
-      queryClient.setQueryData(userKeys.detail(data.user.id), data);
+      queryClient.setQueryData(userKeys.detail(data.data.id), data);
       
       // Call custom onSuccess if provided
       options?.onSuccess?.(data, variables, context);

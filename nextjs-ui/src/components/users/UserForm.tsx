@@ -50,7 +50,7 @@ export function UserForm({ user, onSubmit, isLoading = false }: UserFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6 bg-white shadow-lg border border-gray-200 px-4 py-5 sm:rounded-lg sm:p-6">
       {errors.root && (
         <div className="rounded-md bg-red-50 p-4">
           <div className="text-sm text-red-800">{errors.root.message}</div>

@@ -60,7 +60,7 @@ export default function UsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 bg-white shadow px-4 py-3 sm:rounded-lg sm:px-6">
+      <div className="mb-6 bg-white shadow-lg border border-gray-200 px-4 py-3 sm:rounded-lg sm:px-6">
         <div className="flex items-center space-x-4">
           <label htmlFor="role-filter" className="text-sm font-medium text-gray-700">
             Filter by role:
@@ -97,7 +97,7 @@ export default function UsersPage() {
           onPageChange={setPage}
         />
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6 text-center text-gray-500">
+        <div className="bg-white shadow-lg border border-gray-200 overflow-hidden sm:rounded-lg p-6 text-center text-gray-500">
           No users found
         </div>
       )}
