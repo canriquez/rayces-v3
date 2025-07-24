@@ -7,7 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- 2025-07-23 22:30 [Claude] nextjs-ui/: Created comprehensive test infrastructure with MSW v2 for API mocking. Added handlers.ts with all endpoint mocks and server.ts for test setup. Implements Task 9 from PRP-73.
+- 2025-07-23 22:30 [Claude] nextjs-ui/: Added component test suites for LoginForm (8 tests), UserTable (10 tests), and useUsers hooks (15 tests). Includes @testing-library/user-event and whatwg-fetch polyfill. Implements Task 10 from PRP-73.
+- 2025-07-23 [Claude] docs/: Added comprehensive database seeding instructions to README.md. Includes commands for seeding and resetting database in Kubernetes environment.
+- 2025-07-23 [Claude] docs/: Added "Learning Golden Nuggets" section to PRPs/73.md with detailed insights about database seeding issues and solutions. Documents fixes for ActiveRecord::AssociationTypeMismatch and validation bypass techniques.
+
 ### Fixed
+- 2025-07-24 [Claude] rails-api/: Fixed role filter not working in users page. Added role filtering logic to Api::V1::UsersController#index action. The controller now filters users by role when the role parameter is provided in the request. Frontend was already correctly implemented.
+- 2025-07-24 [Claude] nextjs-ui/: Fixed Organization page showing no data. Created organizationApi endpoints in lib/api/endpoints.ts and useOrganizationData hook in hooks/useOrganization.ts to fetch organization data from /api/v1/organization endpoint. Updated Organization page to display actual data including settings from API response.
+- 2025-07-24 [Claude] nextjs-ui/: Fixed Organization, Appointments, and Reports pages showing 404 errors. Created missing page components at src/app/admin/organization/page.tsx, src/app/admin/appointments/page.tsx, and src/app/admin/reports/page.tsx. Organization page shows org details and settings, while Appointments and Reports show placeholder content with "coming soon" notices.
+- 2025-07-24 [Claude] nextjs-ui/: Fixed Manage Users page redirecting to login due to API interceptor clearing auth on 401. Improved error handling in lib/api/client.ts to use Zustand store logout method and avoid race conditions. Added debug logging for authentication flow. Note: Admin credentials are carlos@rayces.com (not admin@rayces.com).
+- 2025-07-23 23:30 [Claude] nextjs-ui/: Fixed TypeError on admin/users route. Updated UsersResponse and UserResponse interfaces in types/api.ts to match actual API response structure (data array at root level, not nested under 'users'). Also updated UsersPage component to use correct property names (data.data instead of data.users, meta.total_count instead of meta.total).
+- 2025-07-23 23:15 [Claude] nextjs-ui/: Fixed session persistence on page reload properly. Created useAuthPersist hook to handle Zustand store hydration state, updated ProtectedRoute to use this hook and wait for hydration before auth checks. Also added auth check to login page to redirect already authenticated users. Sessions now persist correctly across page reloads.
+- 2025-07-23 22:45 [Claude] nextjs-ui/: Fixed login endpoint URL issue in lib/api/endpoints.ts. Created separate axios instance for auth endpoints that use root URLs (/login, /logout) instead of /api/v1 prefix. Resolves "You need to sign in" error after successful login.
+- 2025-07-23 22:15 [Claude] rails-api/: Fixed JWT secret key mismatch in config/initializers/devise.rb. Both Devise JWT encoding and BaseController decoding now use ENV['SECRET_KEY_BASE'] consistently. Resolves "Invalid token" errors on protected endpoints.
+- 2025-07-23 [Claude] nextjs-ui/: Enhanced API error handling in LoginForm and client.ts to properly display detailed error messages from Rails API. Users now see actual error messages instead of generic "Request failed with status code 401".
+- 2025-07-23 [Claude] rails-api/: Fixed 500 errors in login endpoint by removing invalid skip_before_action callbacks from Users::SessionsController and Users::RegistrationsController that don't exist in Devise parent controllers.
+- 2025-07-23 [Claude] rails-api/: Fixed UserSerializer response format in SessionsController to prevent NoMethodError. Login endpoint now returns JWT token successfully.
+- 2025-07-23 [Claude] rails-api/: Removed incorrect sign_in call from Api::V1::BaseController that was causing issues in API-only mode. JWT authentication now works without Devise session management.
+
+### Changed
+- 2025-07-23 [Claude] nextjs-ui/: Updated LoginResponse interface in types/user.ts to match actual Rails API response structure with status object containing code and message fields.
+
+### Updated
+- 2025-07-23 [Assistant] issues/: Updated SCRUM-73/INITIAL-73.md with correct port configuration from k8s manifests. Backend runs on port 4000, frontend on port 8080 when using skaffold dev.
+
+### Added
+- 2025-07-23 [Assistant] PRPs/: Created comprehensive PRP-73.md for building admin testing interface in nextjs-ui folder. Includes complete implementation blueprint for Next.js 15.4.3 app with JWT auth, user CRUD, role-based access control, Zustand state management, TanStack Query, and 100% test coverage with MSW. Confidence score: 9/10.
+- 2025-07-23 [Claude] nextjs-ui/: **COMPLETED 73% of PRP-73** - Built admin testing interface with JWT authentication and user management. Created: (1) **Authentication Infrastructure**: Zustand auth store with persist middleware, LoginForm component, ProtectedRoute wrapper, (2) **User Management System**: Complete CRUD operations with UserTable, UserForm components, React Query hooks with optimistic updates, (3) **Admin Interface**: Dashboard with role-based permissions display, navigation with permission checks, user list/create/edit/detail pages, (4) **API Integration**: Leveraged existing axios client with JWT interceptors, TanStack Query providers, type definitions already in place. **Files created**: 20+ components, hooks, and pages. Ready for MSW testing setup and skaffold validation.
+
+### Fixed
+- 2025-07-23 [Claude] nextjs-ui/: Fixed React hydration error in LoginForm component caused by browser extensions (Grammarly, LastPass) injecting DOM attributes after SSR. Added suppressHydrationWarning to form elements and corrected authApi.login call to pass credentials directly instead of wrapped in user object.
+- 2025-07-23 [Claude] nextjs-ui/: Fixed Jest dependency warnings by upgrading from Jest 29.7.0 to 30.0.5, updating glob from 7.2.3 to 10.4.5, and adding missing @testing-library/dom peer dependency. Used yarn resolutions to force newer glob versions and eliminated deprecated package warnings during yarn install.
+- 2025-01-23 [Claude] nextjs-ui/: Fixed all linting and TypeScript errors in admin interface. Updated AdminNav and RoleBasedMenu to properly handle React hooks rules, fixed type annotations to remove 'any' usage, added usePermissions hook that returns all permissions as object, and ensured all components pass strict TypeScript checks. Part of PRP-73 implementation.
 - 2025-07-18 [Claude] nextjs/: Fixed Tailwind CSS v4 PostCSS configuration error by updating postcss.config.mjs to use '@tailwindcss/postcss' plugin instead of deprecated 'tailwindcss' plugin. Resolves Next.js build error when accessing localhost:8080.
 
 ### Changed

@@ -60,9 +60,9 @@ ActsAsTenant.with_tenant(rayces_org) do
   
   # Admin user
   admin = User.create!(
-    email: "admin@rayces.com",
-    first_name: "Administrador",
-    last_name: "Rayces",
+    email: "carlos@rayces.com",
+    first_name: "Carlos",
+    last_name: "Anriquez",
     phone: "+54 11 4567-8900",
     role: :admin,
     organization: rayces_org,
@@ -511,8 +511,8 @@ ActsAsTenant.with_tenant(rayces_org) do
   )
   past_appointment.save!(validate: false)
   
-  # Upcoming confirmed appointment
-  Appointment.create!(
+  # Upcoming confirmed appointment - skip validation
+  upcoming_appointment1 = Appointment.new(
     professional: julieta_dip,
     client: parent2,
     student: student3,
@@ -522,9 +522,10 @@ ActsAsTenant.with_tenant(rayces_org) do
     state: :confirmed,
     price: 8500.00
   )
+  upcoming_appointment1.save!(validate: false)
   
-  # Pending confirmation appointment
-  Appointment.create!(
+  # Pending confirmation appointment - skip validation
+  upcoming_appointment2 = Appointment.new(
     professional: ana_lagrotteria,
     client: parent1,
     student: student2,
@@ -534,9 +535,10 @@ ActsAsTenant.with_tenant(rayces_org) do
     state: :pre_confirmed,
     price: 7500.00
   )
+  upcoming_appointment2.save!(validate: false)
   
-  # Another confirmed appointment
-  Appointment.create!(
+  # Another confirmed appointment - skip validation
+  upcoming_appointment3 = Appointment.new(
     professional: priscila_tarifa,
     client: parent3,
     student: student4,
@@ -546,6 +548,7 @@ ActsAsTenant.with_tenant(rayces_org) do
     state: :confirmed,
     price: 8000.00
   )
+  upcoming_appointment3.save!(validate: false)
   
   puts "Created #{Appointment.count} appointments"
 end
@@ -602,10 +605,6 @@ ActsAsTenant.with_tenant(demo_org) do
   puts "Created demo organization data with role assignments"
 end
 
-# Legacy MyHub posts (preserve existing functionality)
-# NOTE: Skipping post creation as Post model expects content field that doesn't exist in schema
-puts "Skipping legacy MyHub posts creation (content field mismatch)"
-
 puts "Database seeded successfully!"
 puts ""
 puts "=== SEED DATA SUMMARY ==="
@@ -623,7 +622,7 @@ ActsAsTenant.without_tenant do
 end
 puts ""
 puts "=== RAYCES REAL TEAM CREDENTIALS ==="
-puts "Admin: admin@rayces.com / password123"
+puts "Admin: carlos@rayces.com / password123"
 puts ""
 puts "DIRECTORS:"
 puts "Lic. María de Elía Cavanagh (Psicopedagóga): m.cavanagh@rayces.com / password123"

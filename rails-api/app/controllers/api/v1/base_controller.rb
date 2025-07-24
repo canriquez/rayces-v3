@@ -66,7 +66,6 @@ class Api::V1::BaseController < ActionController::API
       end
       
       @jwt_payload = jwt_payload # Store for tenant validation
-      sign_in @current_user, store: false
       return true
     else
       # If decode_jwt_token returned nil, it was due to an error

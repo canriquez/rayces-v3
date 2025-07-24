@@ -163,8 +163,11 @@ kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | gr
 # Run database migrations
 kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:migrate
 
-# Run database seeds
+# Run database seeds (Creates demo data with 2 organizations, 15 users, 8 professionals, 4 students, and 4 appointments)
 kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:seed
+
+# Reset database and seed fresh data (WARNING: This will delete all existing data)
+kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails db:drop db:create db:migrate db:seed
 
 # Access Rails console
 kubectl exec -n raycesv3 -it $(kubectl get pods -n raycesv3 | grep rails-rayces | grep Running | awk '{print $1}') -- bundle exec rails console
@@ -179,6 +182,26 @@ kubectl exec -n raycesv3 $(kubectl get pods -n raycesv3 | grep rails-rayces | gr
 **Note**: The `-it` flag is only needed for interactive commands like the Rails console. For automated commands (tests, migrations, seeds), omit the `-it` flag to avoid TTY warnings.
 
 **Important**: When developing with `skaffold dev`, code changes automatically trigger pod restarts. The service monitors file changes and kills/respins pods automatically (~5 seconds). Do NOT manually restart deployments with `kubectl rollout restart` as this is unnecessary and skaffold handles hot reloading.
+
+### Database Seeding
+
+The Rails application includes comprehensive seed data for testing. The seeds create:
+
+- **2 Organizations**: 
+  - Rayces (main organization with real team data)
+  - Demo (demo organization for testing)
+- **15 Users** with various roles (admin, professional, staff, guardian)
+- **8 Professional profiles** based on real Rayces team members
+- **4 Students** with parent relationships
+- **4 Appointments** in different states (draft, pre_confirmed, confirmed, executed)
+
+**Default Credentials** (all passwords are `password123`):
+- Admin: `admin@rayces.com`
+- Professional: `m.cavanagh@rayces.com` (and other team members)
+- Staff: `c.gonzalez@rayces.com`
+- Parent: `padre1@example.com`, `madre1@example.com`
+
+**Note**: The seeds check if data already exists and will skip seeding if organizations are found. To reset and reseed, use the database reset command shown above.
 
 ### Accessing the Application
 - **Frontend**: http://localhost:3000 (MyHub UI + booking extensions)

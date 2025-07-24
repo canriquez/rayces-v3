@@ -22,7 +22,7 @@ spec:
             # Run the seed task
             bundle exec rails db:seed
         envFrom:
-        - configMapRef:
-            name: raycesv3-config
+          - secretRef:
+              name: raycesv3-environment
       restartPolicy: Never
 

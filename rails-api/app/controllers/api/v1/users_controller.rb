@@ -5,6 +5,12 @@ class Api::V1::UsersController < Api::V1::BaseController
   def index
     authorize User
     @users = policy_scope(User)
+    
+    # Filter by role if provided
+    if params[:role].present?
+      @users = @users.where(role: params[:role])
+    end
+    
     render_paginated(@users, UserSerializer)
   end
   

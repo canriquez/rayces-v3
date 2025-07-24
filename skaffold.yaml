@@ -19,7 +19,8 @@ build:
         dockerfile: Dockerfile
       # Specify the platform if your dev container (and thus k3d nodes) are ARM64
     - image: rayces-frontend
-      context: nextjs
+      # context: nextjs <= points to old demo project
+      context: nextjs-ui
       docker:
         dockerfile: Dockerfile
         target: dev
